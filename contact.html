@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연락처 - LUMEN</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; 
+            background: #f0f2f5; 
+            color: #333; 
+            line-height: 1.8; 
+        }
+        
+        header { 
+            background: linear-gradient(135deg, #003366 0%, #004d99 100%); 
+            color: white; 
+            padding: 1.5rem 1rem; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        nav a {
+            color: #003366;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #FFD700; }
+        
+        .container { 
+            max-width: 900px; 
+            margin: 2rem auto; 
+            padding: 0 1rem; 
+        }
+        
+        .content-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h2 { 
+            color: #003366; 
+            margin-top: 2rem; 
+            margin-bottom: 1rem; 
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #FFD700;
+        }
+        h2:first-of-type { margin-top: 0; }
+        
+        .contact-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #003366;
+        }
+        
+        .contact-card h3 {
+            color: #003366;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            gap: 1rem;
+        }
+        
+        .contact-info .icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .contact-info a {
+            color: #003366;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .contact-info a:hover {
+            color: #FFD700;
+            text-decoration: underline;
+        }
+        
+        .faq-item {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .faq-item h4 {
+            color: #003366;
+            margin-bottom: 0.8rem;
+        }
+        
+        p { margin-bottom: 1rem; }
+        
+        ul { 
+            margin-left: 2rem; 
+            margin-bottom: 1rem; 
+        }
+        li { margin-bottom: 0.5rem; }
+        
+        footer { 
+            background: #003366; 
+            color: white; 
+            text-align: center; 
+            padding: 2rem; 
+            margin-top: 3rem; 
+        }
+        footer a { color: #FFD700; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        
+        @media (max-width: 768px) {
+            .content-box { padding: 1.5rem; }
+            nav ul { flex-direction: column; align-items: center; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>✨ LUMEN</h1>
+        <p>연락처 및 문의</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">🏠 홈</a></li>
+            <li><a href="about.html">📖 소개</a></li>
+            <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
+            <li><a href="terms.html">📋 이용약관</a></li>
+            <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
+            <li><a href="contact.html">📧 연락처</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content-box">
+            <h2>📬 연락처</h2>
+            <p>LUMEN에 대한 문의, 제안, 피드백을 환영합니다!</p>
+            
+            <div class="contact-card">
+                <h3>운영자 정보</h3>
+                <div class="contact-info">
+                    <span class="icon">👤</span>
+                    <div>
+                        <strong>운영자:</strong> 김대현<br>
+                        <span style="color: #666; font-size: 0.9rem;">간호사 | 의료 정보 큐레이터</span>
+                    </div>
+                </div>
+                
+                <div class="contact-info">
+                    <span class="icon">📧</span>
+                    <div>
+                        <strong>이메일:</strong> <a href="mailto:lumenmedi@gmail.com">lumenmedi@gmail.com</a><br>
+                        <span style="color: #666; font-size: 0.9rem;">평균 응답 시간: 1-2 영업일</span>
+                    </div>
+                </div>
+                
+                <div class="contact-info">
+                    <span class="icon">🌐</span>
+                    <div>
+                        <strong>웹사이트:</strong> <a href="https://lumenmedi.com" target="_blank">lumenmedi.com</a>
+                    </div>
+                </div>
+                
+                <div class="contact-info">
+                    <span class="icon">📍</span>
+                    <div>
+                        <strong>위치:</strong> 대한민국 서울특별시
+                    </div>
+                </div>
+            </div>
+            
+            <h2>💬 문의 유형</h2>
+            <p>다음과 같은 문의를 받고 있습니다:</p>
+            
+            <div class="faq-item">
+                <h4>🔧 기술적 문제</h4>
+                <p>사이트 오류, 표시 문제, 링크 오작동 등</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>📰 콘텐츠 관련</h4>
+                <p>번역 오류, 잘못된 정보, 추가하고 싶은 RSS 소스 제안</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>💡 기능 제안</h4>
+                <p>새로운 기능 아이디어, 사용자 경험 개선 제안</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>🤝 협업 제안</h4>
+                <p>파트너십, 광고 문의, 데이터 공유 등</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>⚖️ 법적 문의</h4>
+                <p>저작권, 개인정보 보호, 이용약관 관련 문의</p>
+            </div>
+            
+            <h2>❓ 자주 묻는 질문 (FAQ)</h2>
+            
+            <div class="faq-item">
+                <h4>Q: 뉴스는 얼마나 자주 업데이트되나요?</h4>
+                <p>A: 매일 오전 8시(한국 시간)에 자동으로 업데이트됩니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>Q: 특정 주제의 뉴스를 추가할 수 있나요?</h4>
+                <p>A: 네! lumenmedi@gmail.com으로 제안해주시면 검토 후 추가하겠습니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>Q: 과거 뉴스를 볼 수 있나요?</h4>
+                <p>A: 현재는 최신 뉴스만 표시되지만, 아카이브 기능을 추가할 예정입니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>Q: 모바일 앱이 있나요?</h4>
+                <p>A: 아직 없지만, 웹사이트가 모바일에 최적화되어 있습니다. 향후 앱 출시를 검토 중입니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4>Q: 이메일 뉴스레터를 받을 수 있나요?</h4>
+                <p>A: 현재는 제공하지 않지만, 향후 추가 예정입니다. 관심 있으시면 이메일로 연락주세요!</p>
+            </div>
+            
+            <h2>🌟 협업 제안</h2>
+            <p>다음과 같은 협업을 환영합니다:</p>
+            <ul>
+                <li>의료 기관과의 파트너십</li>
+                <li>의학 저널 및 출판사와의 제휴</li>
+                <li>의료 기술 회사와의 협력</li>
+                <li>의학 교육 기관과의 콘텐츠 공유</li>
+            </ul>
+            
+            <h2>🔒 개인정보 보호</h2>
+            <p>문의 시 제공하신 개인정보는 문의 응대 목적으로만 사용되며, 제3자에게 제공되지 않습니다.</p>
+            <p>자세한 내용은 <a href="privacy.html" style="color: #003366; text-decoration: underline;">개인정보처리방침</a>을 참고하시기 바랍니다.</p>
+            
+            <h2>⏰ 응답 시간</h2>
+            <p>이메일 문의에 대한 평균 응답 시간은 <strong>1-2 영업일</strong>입니다.</p>
+            <p>긴급한 기술적 문제의 경우 제목에 [긴급]을 표시해주시면 우선 처리하겠습니다.</p>
+            
+            <div class="contact-card" style="background: #fff3cd; border-left-color: #FFD700;">
+                <h3>📢 소셜 미디어 (준비 중)</h3>
+                <p>향후 다음 채널에서도 만나실 수 있습니다:</p>
+                <ul>
+                    <li>Twitter/X (준비 중)</li>
+                    <li>LinkedIn (준비 중)</li>
+                    <li>Facebook (준비 중)</li>
+                </ul>
+                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                    소셜 미디어 계정 개설 시 공지하겠습니다!
+                </p>
+            </div>
+            
+            <div class="contact-card" style="background: #e8f4fd; border-left-color: #003366;">
+                <h3>💌 연락 주실 때</h3>
+                <p>다음 정보를 포함해주시면 더 빠르게 도와드릴 수 있습니다:</p>
+                <ul>
+                    <li>이름 (선택사항)</li>
+                    <li>소속 (병원, 학교 등 - 선택사항)</li>
+                    <li>문의 유형 (기술/콘텐츠/제안 등)</li>
+                    <li>구체적인 문의 내용</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2024 <a href="index.html">LUMEN</a> | <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
+            문의: <a href="mailto:lumenmedi@gmail.com">lumenmedi@gmail.com</a>
+        </p>
+    </footer>
+</body>
+</html>
