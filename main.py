@@ -349,6 +349,7 @@ def generate_html(news_list):
             header h1 {{ font-size: 1.8rem; }}
             .grid {{ grid-template-columns: 1fr; }}
             .stats-inline {{ flex-direction: column; align-items: flex-start; }}
+            nav ul {{ flex-direction: column; align-items: center; gap: 1rem; }}
         }}
     </style>
 </head>
@@ -358,7 +359,23 @@ def generate_html(news_list):
         <p class="update">📅 {current_date}</p>
     </header>
     
+    <nav>
+        <ul>
+            <li><a href="index.html">🏠 홈</a></li>
+            <li><a href="about.html">📖 소개</a></li>
+            <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
+            <li><a href="terms.html">📋 이용약관</a></li>
+            <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
+            <li><a href="contact.html">📧 연락처</a></li>
+        </ul>
+    </nav>
+    
     <div class="container">
+        <!-- 면책 문구 -->
+        <div class="disclaimer-banner">
+            <p><strong>⚠️ 의료 정보 안내:</strong> 본 사이트의 정보는 교육 목적이며 의학적 조언을 대체할 수 없습니다. 
+            자세한 내용은 <a href="disclaimer.html">면책조항</a>을 참고하세요.</p>
+        </div>
         <!-- 간결한 통계 (한 줄) -->
         <div class="stats-inline">
             <div class="stat-item">
@@ -418,9 +435,14 @@ def generate_html(news_list):
     </div>
     
     <footer>
-        <p>© 2024 <a href="https://lumenmedi.com">LUMEN</a></p>
+        <p>© 2024 <a href="index.html">LUMEN</a> | 
+        <a href="about.html">소개</a> | 
+        <a href="privacy.html">개인정보처리방침</a> | 
+        <a href="terms.html">이용약관</a> | 
+        <a href="disclaimer.html">면책조항</a> | 
+        <a href="contact.html">연락처</a></p>
         <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
-            AI 큐레이션 | 매일 오전 8시 업데이트
+            AI 큐레이션 | 매일 오전 8시 업데이트 | 문의: lumenmedi@gmail.com
         </p>
     </footer>
 </body>
