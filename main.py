@@ -1,0 +1,461 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+LUMEN - 의학 정보 큐레이션 사이트 (RSS 소스 확장 + 중복 제거 + 카테고리 자동 분류)
+"""
+
+import os
+from dotenv import load_dotenv
+import feedparser
+from datetime import datetime
+import time
+import requests
+import json
+
+# =========================================================
+# 설정
+# =========================================================
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+    print("⚠️ API 키가 없습니다!")
+    exit()
+
+print(f"🔑 API 키 로드 성공: {GEMINI_API_KEY[:5]}...")
+
+# =========================================================
+# Gemini 2.0 Flash로 카테고리 자동 분류 + 요약
+# =========================================================
+def get_ai_summary_and_category(title):
+    """
+    뉴스 제목을 보고 한국어 요약 + 카테고리 자동 분류
+    """
+    print(f"    🤖 AI 요약 및 분류 중...")
+    
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    
+    headers = {"Content-Type": "application/json"}
+    
+    payload = {
+        "contents": [{
+            "parts": [{
+                "text": f"""당신은 10년 차 베테랑 소화기내과 간호사입니다.
+아래 뉴스 제목을 보고 두 가지 작업을 수행하세요:
+
+1. 한국어로 2~3문장 요약 (전문적인 '합니다' 체)
+2. 카테고리 분류
+
+[카테고리 옵션]
+- 기술/혁신: AI, 새로운 장비, 기술 발전
+- 규제/가이드라인: FDA 승인, 정책, 지침
+- 연구/임상: 임상시험, 연구 결과, 통계
+- 안전/품질: 감염 관리, 의료사고, 안전
+- 교육/훈련: 교육 프로그램, 워크샵
+
+뉴스 제목: {title}
+
+응답 형식 (반드시 이 형식으로):
+카테고리: [위 옵션 중 하나]
+요약: [2-3문장 한국어 요약]"""
+            }]
+        }],
+        "generationConfig": {
+            "temperature": 0.7,
+            "maxOutputTokens": 300
+        }
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            
+            if 'candidates' in result and len(result['candidates']) > 0:
+                candidate = result['candidates'][0]
+                
+                if 'content' in candidate and 'parts' in candidate['content']:
+                    text = candidate['content']['parts'][0].get('text', '')
+                    
+                    if text:
+                        category = "연구/임상"
+                        summary = text.strip()
+                        
+                        lines = text.strip().split('\n')
+                        for line in lines:
+                            if '카테고리:' in line or 'Category:' in line:
+                                category = line.split(':', 1)[1].strip()
+                            elif '요약:' in line or 'Summary:' in line:
+                                idx = text.find('요약:')
+                                if idx == -1:
+                                    idx = text.find('Summary:')
+                                if idx != -1:
+                                    summary = text[idx:].split(':', 1)[1].strip()
+                        
+                        print(f"    ✅ 완료! [{category}]\n")
+                        return summary, category
+            
+            print(f"    ⚠️ 파싱 실패\n")
+            return f"{title[:80]}...", "연구/임상"
+            
+        else:
+            print(f"    ❌ API 오류 ({response.status_code})\n")
+            return f"{title[:80]}...", "연구/임상"
+            
+    except Exception as e:
+        print(f"    ❌ 오류: {str(e)[:50]}\n")
+        return f"{title[:80]}...", "연구/임상"
+
+
+# ============================================
+# 중복 체크 함수
+# ============================================
+def is_duplicate(title, existing_news, threshold=0.7):
+    """
+    제목 유사도를 계산해서 중복 판별
+    threshold=0.7 : 70% 이상 유사하면 중복으로 간주
+    """
+    from difflib import SequenceMatcher
+    
+    title_lower = title.lower()
+    
+    for news in existing_news:
+        existing_title_lower = news['title'].lower()
+        similarity = SequenceMatcher(None, title_lower, existing_title_lower).ratio()
+        
+        if similarity > threshold:
+            return True
+    
+    return False
+
+
+# ============================================
+# RSS 피드 수집
+# ============================================
+def fetch_rss_feeds():
+    print("\n📡 여러 RSS 피드에서 최신 기사를 가져오는 중...\n")
+    
+    # ★ 확장된 RSS 피드 목록
+    rss_urls = [
+        # Google News 검색
+        {
+            "url": "https://news.google.com/rss/search?q=endoscopy+health&hl=en-US&gl=US&ceid=US:en",
+            "name": "Google News - Endoscopy",
+            "priority": "⭐⭐⭐"
+        },
+        {
+            "url": "https://news.google.com/rss/search?q=gastroenterology+endoscopy&hl=en-US&gl=US&ceid=US:en",
+            "name": "Google News - Gastroenterology",
+            "priority": "⭐⭐⭐"
+        },
+        {
+            "url": "https://news.google.com/rss/search?q=colonoscopy+screening&hl=en-US&gl=US&ceid=US:en",
+            "name": "Google News - Colonoscopy",
+            "priority": "⭐⭐⭐"
+        },
+        
+        # ScienceDaily
+        {
+            "url": "https://rss.sciencedaily.com/health_medicine/digestive_disorders.xml",
+            "name": "ScienceDaily - Digestive",
+            "priority": "⭐⭐⭐⭐"
+        },
+        
+        # 전문 의학 뉴스 사이트들 (RSS 지원하는 경우)
+        {
+            "url": "https://medicalxpress.com/rss-feed/search/?search=endoscopy",
+            "name": "Medical Xpress - Endoscopy",
+            "priority": "⭐⭐⭐⭐"
+        },
+        {
+            "url": "https://www.news-medical.net/tag/feed/Endoscopy.aspx",
+            "name": "News-Medical - Endoscopy",
+            "priority": "⭐⭐⭐⭐"
+        },
+    ]
+    
+    news_items = []
+    total_count = 0
+    
+    for feed_info in rss_urls:
+        url = feed_info["url"]
+        source_name = feed_info["name"]
+        priority = feed_info["priority"]
+        
+        print(f"📡 {source_name} ({priority})에서 수집 중...")
+        
+        try:
+            feed = feedparser.parse(url)
+            
+            if not feed.entries:
+                print(f"  ⚠️ 피드가 비어있거나 접근 불가\n")
+                continue
+            
+            # 각 피드에서 3~5개씩 (우선순위 높으면 더 많이)
+            num_articles = 5 if "⭐⭐⭐⭐" in priority else 3
+            
+            for i, entry in enumerate(feed.entries[:num_articles], 1):
+                total_count += 1
+                print(f"  [{total_count}] 기사 처리 중...")
+                
+                title = entry.get('title', '제목 없음')
+                link = entry.get('link', '#')
+                published = entry.get('published', '')
+                
+                # 중복 체크
+                if is_duplicate(title, news_items):
+                    print(f"    ⚠️ 중복 뉴스 건너뜀\n")
+                    continue
+                
+                # 날짜 파싱
+                try:
+                    # 여러 날짜 형식 시도
+                    date_formats = [
+                        '%a, %d %b %Y %H:%M:%S %z',
+                        '%a, %d %b %Y %H:%M:%S %Z',
+                        '%a, %d %b %Y',
+                        '%Y-%m-%d',
+                    ]
+                    
+                    date_obj = None
+                    for fmt in date_formats:
+                        try:
+                            date_obj = datetime.strptime(published[:25], fmt)
+                            break
+                        except:
+                            continue
+                    
+                    if date_obj:
+                        formatted_date = date_obj.strftime('%Y-%m-%d')
+                    else:
+                        formatted_date = datetime.now().strftime('%Y-%m-%d')
+                except:
+                    formatted_date = datetime.now().strftime('%Y-%m-%d')
+
+                # AI 요약 + 카테고리 분류
+                summary_text, category = get_ai_summary_and_category(title)
+                
+                news_item = {
+                    'title': title,
+                    'summary': summary_text,
+                    'source': source_name,
+                    'priority': priority,
+                    'date': formatted_date,
+                    'url': link,
+                    'category': category
+                }
+                news_items.append(news_item)
+                
+                # API Rate Limit 방지
+                print(f"    ⏳ 2초 대기...\n")
+                time.sleep(2)
+        
+        except Exception as e:
+            print(f"  ❌ {source_name} 피드 오류: {e}\n")
+            continue
+        
+        print(f"  ✅ {source_name} 완료!\n")
+    
+    print(f"=" * 60)
+    print(f"✅ 총 {len(news_items)}개 기사 수집 완료!")
+    print(f"=" * 60)
+    print()
+    return news_items
+
+
+# ============================================
+# HTML 생성
+# ============================================
+def generate_html(news_list):
+    current_date = datetime.now().strftime("%Y년 %m월 %d일")
+    
+    # 카테고리별 색상
+    category_tag_class = {
+        "기술/혁신": "tag-tech",
+        "규제/가이드라인": "tag-regulation",
+        "연구/임상": "tag-research",
+        "안전/품질": "tag-safety",
+        "교육/훈련": "tag-education"
+    }
+    
+    html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="해외 최신 내시경 의학 뉴스를 AI가 매일 한국어로 큐레이션합니다">
+    <meta name="keywords" content="내시경,의학,뉴스,소화기내과,gastroenterology,endoscopy">
+    <title>LUMEN - 내시경 뉴스</title>
+    <style>
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }}
+        
+        /* 헤더 - 간결하게 */
+        header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
+        header h1 {{ font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
+        .update {{ margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }}
+        
+        /* 컨테이너 */
+        .container {{ max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }}
+        
+        /* 간결한 통계 - 한 줄로 */
+        .stats-inline {{ background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }}
+        .stat-item {{ display: flex; align-items: center; gap: 0.5rem; }}
+        .stat-item .number {{ font-size: 1.5rem; font-weight: bold; color: #003366; }}
+        .stat-item .label {{ font-size: 0.85rem; color: #666; }}
+        
+        /* 뉴스 그리드 */
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }}
+        .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: transform 0.3s, box-shadow 0.3s; }}
+        .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }}
+        
+        /* 카테고리 태그 */
+        .tag {{ display: inline-block; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem; }}
+        .tag-tech {{ background: #4A90E2; }}
+        .tag-regulation {{ background: #E74C3C; }}
+        .tag-research {{ background: #2ECC71; }}
+        .tag-safety {{ background: #F39C12; }}
+        .tag-education {{ background: #9B59B6; }}
+        
+        /* 출처 뱃지 */
+        .source-badge {{ display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; }}
+        
+        /* 제목 */
+        .title {{ font-size: 1.3rem; font-weight: bold; color: #003366; margin-bottom: 1rem; line-height: 1.4; }}
+        
+        /* 요약 */
+        .summary {{ font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }}
+        
+        /* 메타 */
+        .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }}
+        
+        /* 버튼 */
+        .btn {{ display: inline-block; background: #003366; color: white; padding: 0.6rem 1.2rem; border-radius: 5px; text-decoration: none; transition: background 0.3s; }}
+        .btn:hover {{ background: #004d99; }}
+        
+        /* 소개 섹션 (맨 아래) */
+        .about {{ background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 3rem; border-left: 4px solid #FFD700; }}
+        .about h3 {{ color: #003366; margin-bottom: 1rem; }}
+        .about p {{ color: #666; font-size: 0.95rem; }}
+        
+        /* 푸터 */
+        footer {{ background: #003366; color: white; text-align: center; padding: 2rem; margin-top: 2rem; }}
+        footer a {{ color: #FFD700; text-decoration: none; }}
+        footer a:hover {{ text-decoration: underline; }}
+        
+        /* 반응형 */
+        @media (max-width: 768px) {{
+            header h1 {{ font-size: 1.8rem; }}
+            .grid {{ grid-template-columns: 1fr; }}
+            .stats-inline {{ flex-direction: column; align-items: flex-start; }}
+        }}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>✨ LUMEN</h1>
+        <p class="update">📅 {current_date}</p>
+    </header>
+    
+    <div class="container">
+        <!-- 간결한 통계 (한 줄) -->
+        <div class="stats-inline">
+            <div class="stat-item">
+                <span class="number">{len(news_list)}</span>
+                <span class="label">총 뉴스</span>
+            </div>
+"""
+    
+    # 카테고리별 통계 (간결하게)
+    category_counts = {}
+    for news in news_list:
+        cat = news['category']
+        category_counts[cat] = category_counts.get(cat, 0) + 1
+    
+    for category, count in category_counts.items():
+        html += f"""
+            <div class="stat-item">
+                <span class="number">{count}</span>
+                <span class="label">{category}</span>
+            </div>
+"""
+    
+    html += """
+        </div>
+        
+        <!-- 뉴스 그리드 -->
+        <div class="grid">
+"""
+    
+    # 뉴스 카드 생성
+    for news in news_list:
+        tag_class = category_tag_class.get(news['category'], "tag-research")
+        
+        html += f"""
+            <div class="card">
+                <span class="tag {tag_class}">{news['category']}</span>
+                <span class="source-badge">{news['priority']}</span>
+                <h3 class="title">{news['title']}</h3>
+                <p class="summary">{news['summary']}</p>
+                <div class="meta">
+                    <span>📰 {news['source']}</span>
+                    <span>{news['date']}</span>
+                </div>
+                <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            </div>
+"""
+    
+    html += """
+        </div>
+        
+        <!-- 소개 섹션 (맨 아래로 이동) -->
+        <div class="about">
+            <h3>🩺 LUMEN이란?</h3>
+            <p>바쁜 의료 현장을 위해 <strong>Gastroenterology & Endoscopy News, Medical Xpress, News-Medical</strong> 등 
+            해외 최신 내시경 뉴스를 AI(Google Gemini)가 매일 한국어로 브리핑합니다.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2024 <a href="https://lumenmedi.com">LUMEN</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
+            AI 큐레이션 | 매일 오전 8시 업데이트
+        </p>
+    </footer>
+</body>
+</html>
+    """
+    return html
+
+
+# ============================================
+# 메인 실행
+# ============================================
+if __name__ == "__main__":
+    print("\n" + "=" * 60)
+    print("🚀 LUMEN 시스템 시작 (확장된 RSS 소스)")
+    print("=" * 60)
+    
+    news_data = fetch_rss_feeds()
+    
+    if not news_data:
+        print("⚠️ 뉴스를 가져오지 못했습니다.")
+        exit()
+    
+    print("🔧 HTML 파일 생성 중...\n")
+    final_html = generate_html(news_data)
+    
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(final_html)
+    
+    print("=" * 60)
+    print("✅ 완료! index.html 파일을 브라우저로 열어보세요.")
+    print("=" * 60)
+    print("\n💡 개선사항:")
+    print("  ✅ RSS 소스 6개로 확대")
+    print("  ✅ 출처별 우선순위 표시")
+    print("  ✅ 중복 뉴스 자동 제거")
+    print("  ✅ AI 카테고리 자동 분류")
+    print("  ✅ 카테고리별 통계 표시")
+    print("  ✅ 전문 의학 사이트 추가 (GEN, Medical Xpress, News-Medical)")
