@@ -554,7 +554,7 @@ def generate_html(news_list):
 """
     
     # 카테고리별 통계
-    category_counts = {{}}
+    category_counts = {}
     for news in news_list:
         cat = news['category']
         category_counts[cat] = category_counts.get(cat, 0) + 1
