@@ -269,7 +269,7 @@ def fetch_rss_feeds():
 
 
 # ============================================
-# HTML 생성
+# HTML 생성 (팝업 모달 포함)
 # ============================================
 def generate_html(news_list):
     current_date = datetime.now().strftime("%Y년 %m월 %d일")
@@ -295,7 +295,7 @@ def generate_html(news_list):
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }}
         
-        /* 헤더 - 간결하게 */
+        /* 헤더 */
         header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
         header h1 {{ font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
         .update {{ margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }}
@@ -352,7 +352,7 @@ def generate_html(news_list):
             font-weight: 500;
         }}
         
-        /* 간결한 통계 - 한 줄로 */
+        /* 간결한 통계 */
         .stats-inline {{ background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }}
         .stat-item {{ display: flex; align-items: center; gap: 0.5rem; }}
         .stat-item .number {{ font-size: 1.5rem; font-weight: bold; color: #003366; }}
@@ -360,7 +360,7 @@ def generate_html(news_list):
         
         /* 뉴스 그리드 */
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }}
-        .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: transform 0.3s, box-shadow 0.3s; }}
+        .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: all 0.3s; cursor: pointer; }}
         .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }}
         
         /* 카테고리 태그 */
@@ -381,13 +381,21 @@ def generate_html(news_list):
         .summary {{ font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }}
         
         /* 메타 */
-        .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }}
+        .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; flex-wrap: wrap; gap: 0.5rem; }}
         
-        /* 버튼 */
-        .btn {{ display: inline-block; background: #003366; color: white; padding: 0.6rem 1.2rem; border-radius: 5px; text-decoration: none; transition: background 0.3s; }}
-        .btn:hover {{ background: #004d99; }}
+        /* 모달 (팝업) */
+        .modal {{ display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }}
+        .modal-content {{ background-color: white; margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }}
+        .close {{ color: #aaa; float: right; font-size: 2rem; font-weight: bold; cursor: pointer; line-height: 1; }}
+        .close:hover {{ color: #000; }}
+        .modal-title {{ font-size: 1.6rem; font-weight: 700; color: #003366; margin-bottom: 1rem; padding-right: 2rem; }}
+        .modal-original-title {{ font-size: 1rem; color: #666; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; }}
+        .modal-summary {{ font-size: 1.05rem; color: #333; line-height: 1.8; margin-bottom: 1.5rem; }}
+        .modal-meta {{ display: flex; justify-content: space-between; font-size: 0.9rem; color: #888; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }}
+        .btn {{ display: inline-block; background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 0.8rem 2rem; border-radius: 6px; text-decoration: none; transition: all 0.3s; font-weight: 500; box-shadow: 0 2px 6px rgba(0,51,102,0.3); }}
+        .btn:hover {{ background: linear-gradient(135deg, #004d99 0%, #003366 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,51,102,0.4); }}
         
-        /* 소개 섹션 (맨 아래) */
+        /* 소개 섹션 */
         .about {{ background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 3rem; border-left: 4px solid #FFD700; }}
         .about h3 {{ color: #003366; margin-bottom: 1rem; }}
         .about p {{ color: #666; font-size: 0.95rem; }}
@@ -403,6 +411,7 @@ def generate_html(news_list):
             .grid {{ grid-template-columns: 1fr; }}
             .stats-inline {{ flex-direction: column; align-items: flex-start; }}
             nav ul {{ flex-direction: column; align-items: center; gap: 1rem; }}
+            .modal-content {{ width: 95%; margin: 10% auto; padding: 1.5rem; }}
         }}
     </style>
 </head>
@@ -457,21 +466,20 @@ def generate_html(news_list):
         <div class="grid">
 """
     
-    # 뉴스 카드 생성
+    # 뉴스 카드 생성 (클릭 시 모달 열기)
     for idx, news in enumerate(news_list):
         tag_class = category_tag_class.get(news['category'], "tag-research")
         
         html += f"""
-            <div class="card">
+            <div class="card" onclick="openModal({idx})">
                 <span class="tag {tag_class}">{news['category']}</span>
                 <span class="source-badge">{news['priority']}</span>
-                <h3 class="title">{news['original_title']}</h3>
+                <h3 class="title">{news['translated_title']}</h3>
                 <p class="summary">{news['short_summary']}</p>
                 <div class="meta">
                     <span>📰 {news['source']}</span>
                     <span>{news['date']}</span>
                 </div>
-                <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
             </div>
 """
     
@@ -485,6 +493,33 @@ def generate_html(news_list):
         </div>
     </div>
     
+    <!-- 모달 팝업 -->
+"""
+    
+    # 각 뉴스별 모달 생성
+    for idx, news in enumerate(news_list):
+        tag_class = category_tag_class.get(news['category'], "tag-research")
+        html += f"""
+    <div id="modal{idx}" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal({idx})">&times;</span>
+            <span class="tag {tag_class}">{news['category']}</span>
+            <h2 class="modal-title">{news['translated_title']}</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> {news['original_title']}
+            </div>
+            <p class="modal-summary">{news['long_summary']}</p>
+            <div class="modal-meta">
+                <span>📰 {news['source']}</span>
+                <span>{news['date']}</span>
+            </div>
+            <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+"""
+    
+    html += """
+    
     <footer>
         <p>© 2024 <a href="index.html">LUMEN</a> | 
         <a href="about.html">소개</a> | 
@@ -496,6 +531,25 @@ def generate_html(news_list):
             AI 큐레이션 | 매일 오전 8시 업데이트 | 문의: lumenmedi@gmail.com
         </p>
     </footer>
+    
+    <script>
+        function openModal(index) {
+            document.getElementById('modal' + index).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(index) {
+            document.getElementById('modal' + index).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
 </body>
 </html>
     """
