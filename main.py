@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LUMEN - 의학 정보 큐레이션 사이트 (팝업 모달 + 제목 번역)
+LUMEN - 의학 정보 큐레이션 사이트 (네비게이션 + 면책 배너 포함)
 """
 
 import os
@@ -262,14 +262,14 @@ def fetch_rss_feeds():
         print(f"  ✅ {source_name} 완료!\n")
     
     print(f"=" * 60)
-    print(f"✅ 총 {len(news_items)}개 기사 수집 완료!")
+    print(f"✅ 이 {len(news_items)}개 기사 수집 완료!")
     print(f"=" * 60)
     print()
     return news_items
 
 
 # ============================================
-# HTML 생성 (팝업 모달)
+# HTML 생성
 # ============================================
 def generate_html(news_list):
     current_date = datetime.now().strftime("%Y년 %m월 %d일")
@@ -295,137 +295,145 @@ def generate_html(news_list):
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }}
         
-        /* 헤더 */
-        header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }}
-        header .header-content {{ max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }}
+        /* 헤더 - 간결하게 */
+        header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
         header h1 {{ font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
-        .update {{ margin-top: 0.3rem; font-size: 0.85rem; opacity: 0.85; }}
-        
-        /* 햄버거 메뉴 */
-        .menu-toggle {{ background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0.5rem; display: none; }}
+        .update {{ margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }}
         
         /* 네비게이션 */
-        nav {{ background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }}
-        nav .nav-container {{ max-width: 1200px; margin: 0 auto; padding: 0 1rem; }}
-        nav ul {{ list-style: none; display: flex; justify-content: center; align-items: center; gap: 0; }}
-        nav li {{ border-right: 1px solid #e0e0e0; }}
-        nav li:last-child {{ border-right: none; }}
-        nav a {{ display: block; color: #003366; text-decoration: none; font-weight: 500; padding: 1rem 1.5rem; transition: all 0.3s; font-size: 0.95rem; }}
-        nav a:hover {{ background: #003366; color: white; }}
+        nav {{
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }}
+        nav ul {{
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }}
+        nav a {{
+            color: #003366;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }}
+        nav a:hover {{ color: #FFD700; }}
         
         /* 컨테이너 */
         .container {{ max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }}
         
-        /* 면책 문구 */
-        .disclaimer-banner {{ background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%); border-left: 5px solid #ffc107; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(255,193,7,0.2); }}
-        .disclaimer-banner p {{ color: #856404; font-size: 0.9rem; margin: 0; line-height: 1.6; }}
-        .disclaimer-banner strong {{ color: #d9534f; font-weight: 600; }}
-        .disclaimer-banner a {{ color: #003366; text-decoration: underline; font-weight: 500; }}
+        /* 면책 배너 */
+        .disclaimer-banner {{
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-left: 5px solid #ffc107;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255,193,7,0.2);
+        }}
+        .disclaimer-banner p {{
+            color: #856404;
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.6;
+        }}
+        .disclaimer-banner strong {{
+            color: #d9534f;
+            font-weight: 600;
+        }}
+        .disclaimer-banner a {{
+            color: #003366;
+            text-decoration: underline;
+            font-weight: 500;
+        }}
         
-        /* 통계 */
-        .stats-inline {{ background: white; padding: 1.2rem 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 2rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1.5rem; }}
+        /* 간결한 통계 - 한 줄로 */
+        .stats-inline {{ background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }}
         .stat-item {{ display: flex; align-items: center; gap: 0.5rem; }}
-        .stat-item .number {{ font-size: 1.8rem; font-weight: bold; color: #003366; }}
-        .stat-item .label {{ font-size: 0.9rem; color: #666; }}
+        .stat-item .number {{ font-size: 1.5rem; font-weight: bold; color: #003366; }}
+        .stat-item .label {{ font-size: 0.85rem; color: #666; }}
         
         /* 뉴스 그리드 */
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }}
-        .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid #003366; transition: all 0.3s; cursor: pointer; }}
-        .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }}
+        .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: transform 0.3s, box-shadow 0.3s; }}
+        .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }}
         
         /* 카테고리 태그 */
-        .tag {{ display: inline-block; color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.8rem; letter-spacing: 0.3px; }}
-        .tag-tech {{ background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%); }}
-        .tag-regulation {{ background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); }}
-        .tag-research {{ background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%); }}
-        .tag-safety {{ background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%); }}
-        .tag-education {{ background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); }}
+        .tag {{ display: inline-block; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem; }}
+        .tag-tech {{ background: #4A90E2; }}
+        .tag-regulation {{ background: #E74C3C; }}
+        .tag-research {{ background: #2ECC71; }}
+        .tag-safety {{ background: #F39C12; }}
+        .tag-education {{ background: #9B59B6; }}
         
         /* 출처 뱃지 */
-        .source-badge {{ display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.3rem 0.6rem; border-radius: 4px; margin-left: 0.5rem; border: 1px solid #e0e0e0; }}
+        .source-badge {{ display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; }}
         
         /* 제목 */
-        .title {{ font-size: 1.4rem; font-weight: 700; color: #003366; margin-bottom: 0.8rem; line-height: 1.4; }}
+        .title {{ font-size: 1.3rem; font-weight: bold; color: #003366; margin-bottom: 1rem; line-height: 1.4; }}
         
-        /* 짧은 요약 */
-        .summary {{ font-size: 0.95rem; color: #555; line-height: 1.7; margin-bottom: 1rem; }}
+        /* 요약 */
+        .summary {{ font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }}
         
         /* 메타 */
-        .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; flex-wrap: wrap; gap: 0.5rem; }}
+        .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }}
         
-        /* 모달 (팝업) */
-        .modal {{ display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }}
-        .modal-content {{ background-color: white; margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }}
-        .close {{ color: #aaa; float: right; font-size: 2rem; font-weight: bold; cursor: pointer; line-height: 1; }}
-        .close:hover {{ color: #000; }}
-        .modal-title {{ font-size: 1.6rem; font-weight: 700; color: #003366; margin-bottom: 1rem; padding-right: 2rem; }}
-        .modal-original-title {{ font-size: 1rem; color: #666; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; }}
-        .modal-summary {{ font-size: 1.05rem; color: #333; line-height: 1.8; margin-bottom: 1.5rem; }}
-        .modal-meta {{ display: flex; justify-content: space-between; font-size: 0.9rem; color: #888; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }}
-        .btn {{ display: inline-block; background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 0.8rem 2rem; border-radius: 6px; text-decoration: none; transition: all 0.3s; font-weight: 500; box-shadow: 0 2px 6px rgba(0,51,102,0.3); }}
-        .btn:hover {{ background: linear-gradient(135deg, #004d99 0%, #003366 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,51,102,0.4); }}
+        /* 버튼 */
+        .btn {{ display: inline-block; background: #003366; color: white; padding: 0.6rem 1.2rem; border-radius: 5px; text-decoration: none; transition: background 0.3s; }}
+        .btn:hover {{ background: #004d99; }}
         
-        /* 소개 섹션 */
-        .about {{ background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-top: 3rem; border-left: 5px solid #FFD700; }}
-        .about h3 {{ color: #003366; margin-bottom: 1rem; font-size: 1.5rem; }}
-        .about p {{ color: #666; font-size: 1rem; line-height: 1.7; }}
+        /* 소개 섹션 (맨 아래) */
+        .about {{ background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 3rem; border-left: 4px solid #FFD700; }}
+        .about h3 {{ color: #003366; margin-bottom: 1rem; }}
+        .about p {{ color: #666; font-size: 0.95rem; }}
         
         /* 푸터 */
-        footer {{ background: #003366; color: white; text-align: center; padding: 2.5rem 1rem; margin-top: 3rem; }}
-        footer a {{ color: #FFD700; text-decoration: none; transition: opacity 0.3s; }}
-        footer a:hover {{ opacity: 0.8; text-decoration: underline; }}
-        footer .footer-links {{ margin-bottom: 1rem; }}
-        footer .footer-links a {{ margin: 0 0.8rem; font-size: 0.9rem; }}
+        footer {{ background: #003366; color: white; text-align: center; padding: 2rem; margin-top: 2rem; }}
+        footer a {{ color: #FFD700; text-decoration: none; }}
+        footer a:hover {{ text-decoration: underline; }}
         
         /* 반응형 */
         @media (max-width: 768px) {{
-            header h1 {{ font-size: 1.6rem; }}
+            header h1 {{ font-size: 1.8rem; }}
             .grid {{ grid-template-columns: 1fr; }}
             .stats-inline {{ flex-direction: column; align-items: flex-start; }}
-            .menu-toggle {{ display: block; }}
-            nav ul {{ flex-direction: column; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }}
-            nav ul.active {{ max-height: 500px; }}
-            nav li {{ width: 100%; border-right: none; border-bottom: 1px solid #e0e0e0; }}
-            nav li:last-child {{ border-bottom: none; }}
-            nav a {{ padding: 1rem; text-align: center; }}
-            .modal-content {{ width: 95%; margin: 10% auto; padding: 1.5rem; }}
+            nav ul {{ flex-direction: column; align-items: center; gap: 1rem; }}
         }}
     </style>
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <div>
-                <h1>✨ LUMEN</h1>
-                <p class="update">📅 {current_date}</p>
-            </div>
-            <button class="menu-toggle" onclick="toggleMenu()" aria-label="메뉴">☰</button>
-        </div>
+        <h1>✨ LUMEN</h1>
+        <p class="update">📅 {current_date}</p>
     </header>
     
     <nav>
-        <div class="nav-container">
-            <ul id="navMenu">
-                <li><a href="index.html">🏠 홈</a></li>
-                <li><a href="about.html">📖 소개</a></li>
-                <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
-                <li><a href="terms.html">📋 이용약관</a></li>
-                <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
-                <li><a href="contact.html">📧 연락처</a></li>
-            </ul>
-        </div>
+        <ul>
+            <li><a href="index.html">🏠 홈</a></li>
+            <li><a href="about.html">📖 소개</a></li>
+            <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
+            <li><a href="terms.html">📋 이용약관</a></li>
+            <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
+            <li><a href="contact.html">📧 연락처</a></li>
+        </ul>
     </nav>
     
     <div class="container">
+        <!-- 면책 문구 -->
         <div class="disclaimer-banner">
             <p><strong>⚠️ 의료 정보 안내:</strong> 본 사이트의 정보는 교육 목적이며 의학적 조언을 대체할 수 없습니다. 
             자세한 내용은 <a href="disclaimer.html">면책조항</a>을 참고하세요.</p>
         </div>
-        
+        <!-- 간결한 통계 (한 줄) -->
         <div class="stats-inline">
             <div class="stat-item">
                 <span class="number">{len(news_list)}</span>
-                <span class="label">총 뉴스</span>
+                <span class="label">이 뉴스</span>
             </div>
 """
     
@@ -454,15 +462,16 @@ def generate_html(news_list):
         tag_class = category_tag_class.get(news['category'], "tag-research")
         
         html += f"""
-            <div class="card" onclick="openModal({idx})">
+            <div class="card">
                 <span class="tag {tag_class}">{news['category']}</span>
                 <span class="source-badge">{news['priority']}</span>
-                <h3 class="title">{news['translated_title']}</h3>
+                <h3 class="title">{news['original_title']}</h3>
                 <p class="summary">{news['short_summary']}</p>
                 <div class="meta">
                     <span>📰 {news['source']}</span>
                     <span>{news['date']}</span>
                 </div>
+                <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
             </div>
 """
     
@@ -476,77 +485,17 @@ def generate_html(news_list):
         </div>
     </div>
     
-    <!-- 모달 팝업 -->
-"""
-    
-    # 각 뉴스별 모달 생성
-    for idx, news in enumerate(news_list):
-        tag_class = category_tag_class.get(news['category'], "tag-research")
-        html += f"""
-    <div id="modal{idx}" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal({idx})">&times;</span>
-            <span class="tag {tag_class}">{news['category']}</span>
-            <h2 class="modal-title">{news['translated_title']}</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> {news['original_title']}
-            </div>
-            <p class="modal-summary">{news['long_summary']}</p>
-            <div class="modal-meta">
-                <span>📰 {news['source']}</span>
-                <span>{news['date']}</span>
-            </div>
-            <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-"""
-    
-    html += """
-    
     <footer>
-        <div class="footer-links">
-            <a href="about.html">소개</a>
-            <a href="privacy.html">개인정보처리방침</a>
-            <a href="terms.html">이용약관</a>
-            <a href="disclaimer.html">면책조항</a>
-            <a href="contact.html">연락처</a>
-        </div>
-        <p>© 2024 <a href="index.html">LUMEN</a></p>
-        <p style="margin-top: 0.8rem; font-size: 0.9rem; opacity: 0.9;">
+        <p>© 2024 <a href="index.html">LUMEN</a> | 
+        <a href="about.html">소개</a> | 
+        <a href="privacy.html">개인정보처리방침</a> | 
+        <a href="terms.html">이용약관</a> | 
+        <a href="disclaimer.html">면책조항</a> | 
+        <a href="contact.html">연락처</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
             AI 큐레이션 | 매일 오전 8시 업데이트 | 문의: lumenmedi@gmail.com
         </p>
     </footer>
-    
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('navMenu');
-            menu.classList.toggle('active');
-        }
-        
-        window.addEventListener('resize', function() {
-            const menu = document.getElementById('navMenu');
-            if (window.innerWidth > 768) {
-                menu.classList.remove('active');
-            }
-        });
-        
-        function openModal(index) {
-            document.getElementById('modal' + index).style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeModal(index) {
-            document.getElementById('modal' + index).style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        }
-    </script>
 </body>
 </html>
     """
@@ -558,7 +507,7 @@ def generate_html(news_list):
 # ============================================
 if __name__ == "__main__":
     print("\n" + "=" * 60)
-    print("🚀 LUMEN 시스템 시작 (팝업 모달 + 제목 번역)")
+    print("🚀 LUMEN 시스템 시작 (네비게이션 + 면책 배너 포함)")
     print("=" * 60)
     
     news_data = fetch_rss_feeds()
@@ -577,8 +526,7 @@ if __name__ == "__main__":
     print("✅ 완료! index.html 파일을 브라우저로 열어보세요.")
     print("=" * 60)
     print("\n💡 개선사항:")
-    print("  ✅ 제목 한국어 번역")
-    print("  ✅ 짧은 요약 (1-2줄)")
-    print("  ✅ 팝업 모달 (클릭 시)")
-    print("  ✅ 긴 요약 (모달 내)")
-    print("  ✅ 원문 제목 표시")
+    print("  ✅ 네비게이션 메뉴 추가")
+    print("  ✅ 면책 배너 추가")
+    print("  ✅ 짧은 요약 표시")
+    print("  ✅ 원문 링크 제공")
