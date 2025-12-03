@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사이트 소개 - LUMEN</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; 
+            background: #f0f2f5; 
+            color: #333; 
+            line-height: 1.8; 
+        }
+        
+        header { 
+            background: linear-gradient(135deg, #003366 0%, #004d99 100%); 
+            color: white; 
+            padding: 1.5rem 1rem; 
+            text-align: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        nav a {
+            color: #003366;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #FFD700; }
+        
+        .container { 
+            max-width: 900px; 
+            margin: 2rem auto; 
+            padding: 0 1rem; 
+        }
+        
+        .content-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 2rem 0;
+            border-bottom: 2px solid #FFD700;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h2 {
+            font-size: 2rem;
+            color: #003366;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        h2 { 
+            color: #003366; 
+            margin-top: 2rem; 
+            margin-bottom: 1rem; 
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #FFD700;
+        }
+        
+        h3 { 
+            color: #004d99; 
+            margin-top: 1.5rem; 
+            margin-bottom: 0.8rem; 
+        }
+        
+        p { margin-bottom: 1rem; }
+        
+        ul { 
+            margin-left: 2rem; 
+            margin-bottom: 1rem; 
+        }
+        li { margin-bottom: 0.5rem; }
+        
+        .feature-box {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #003366;
+        }
+        
+        .feature-box h3 {
+            color: #003366;
+            margin-top: 0;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #003366;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        footer { 
+            background: #003366; 
+            color: white; 
+            text-align: center; 
+            padding: 2rem; 
+            margin-top: 3rem; 
+        }
+        footer a { color: #FFD700; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        
+        @media (max-width: 768px) {
+            .content-box { padding: 1.5rem; }
+            nav ul { flex-direction: column; align-items: center; gap: 1rem; }
+            .hero h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>✨ LUMEN</h1>
+        <p>바쁜 의료인을 위한 글로벌 내시경 뉴스 큐레이션</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">🏠 홈</a></li>
+            <li><a href="about.html">📖 소개</a></li>
+            <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
+            <li><a href="terms.html">📋 이용약관</a></li>
+            <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
+            <li><a href="contact.html">📧 연락처</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="content-box">
+            <div class="hero">
+                <h2>🩺 LUMEN이란?</h2>
+                <p>Lighting Up Medical Education & News</p>
+            </div>
+            
+            <p>LUMEN은 <strong>바쁜 의료 현장의 간호사와 의사들을 위해</strong> 해외 최신 내시경 및 소화기내과 뉴스를 매일 한국어로 브리핑하는 큐레이션 서비스입니다.</p>
+            
+            <h2>🎯 우리의 미션</h2>
+            <p>출퇴근 시간 5분이면 세계 의학 트렌드를 파악할 수 있도록, <strong>복잡한 해외 뉴스를 간결하게 정리</strong>하여 제공합니다.</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number">6+</div>
+                    <div class="label">신뢰할 수 있는<br>해외 소스</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">매일</div>
+                    <div class="label">자동 업데이트<br>오전 8시</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">AI</div>
+                    <div class="label">Google Gemini<br>자동 번역·요약</div>
+                </div>
+            </div>
+            
+            <h2>✨ 주요 기능</h2>
+            
+            <div class="feature-box">
+                <h3>📡 다양한 글로벌 소스</h3>
+                <ul>
+                    <li><strong>Google News:</strong> 내시경, 위장관, 대장내시경 관련 최신 뉴스</li>
+                    <li><strong>ScienceDaily:</strong> 소화기 질환 연구 동향</li>
+                    <li><strong>Medical Xpress:</strong> 내시경 기술 혁신</li>
+                    <li><strong>News-Medical:</strong> 전문 의학 뉴스</li>
+                </ul>
+            </div>
+            
+            <div class="feature-box">
+                <h3>🤖 AI 기반 자동 큐레이션</h3>
+                <ul>
+                    <li><strong>한국어 자동 번역:</strong> 복잡한 의학 용어도 이해하기 쉽게</li>
+                    <li><strong>2-3문장 요약:</strong> 핵심만 빠르게 파악</li>
+                    <li><strong>카테고리 자동 분류:</strong> 기술/혁신, 규제/가이드라인, 연구/임상, 안전/품질, 교육/훈련</li>
+                    <li><strong>중복 제거:</strong> 같은 뉴스가 여러 소스에서 나와도 한 번만 표시</li>
+                </ul>
+            </div>
+            
+            <div class="feature-box">
+                <h3>🔗 원문 링크 제공</h3>
+                <p>요약만으로 부족하다면? 각 뉴스의 원문 링크를 통해 전체 내용을 확인할 수 있습니다.</p>
+            </div>
+            
+            <h2>👥 누가 사용하나요?</h2>
+            <ul>
+                <li><strong>소화기내과 간호사:</strong> 최신 내시경 기술 및 가이드라인 학습</li>
+                <li><strong>내시경실 근무자:</strong> 새로운 장비 및 프로토콜 정보 습득</li>
+                <li><strong>소화기내과 전공의/전문의:</strong> 글로벌 임상 트렌드 파악</li>
+                <li><strong>의학 연구자:</strong> 최신 연구 동향 모니터링</li>
+                <li><strong>의학에 관심 있는 일반인:</strong> 건강 정보 습득</li>
+            </ul>
+            
+            <h2>🔧 기술 스택</h2>
+            <ul>
+                <li><strong>데이터 수집:</strong> Python + feedparser (RSS 피드 크롤링)</li>
+                <li><strong>AI 엔진:</strong> Google Gemini 2.0 Flash</li>
+                <li><strong>자동화:</strong> GitHub Actions (매일 23:00 UTC 실행)</li>
+                <li><strong>호스팅:</strong> GitHub Pages + Cloudflare DNS</li>
+                <li><strong>보안:</strong> HTTPS 암호화 연결</li>
+            </ul>
+            
+            <h2>📅 업데이트 일정</h2>
+            <p>매일 오전 8시(한국 시간), GitHub Actions를 통해 자동으로 최신 뉴스를 수집하여 사이트를 업데이트합니다.</p>
+            
+            <h2>🌟 앞으로의 계획</h2>
+            <ul>
+                <li>뉴스 아카이브 기능 (과거 뉴스 검색)</li>
+                <li>카테고리별 필터링</li>
+                <li>이메일 뉴스레터 구독</li>
+                <li>모바일 앱 출시 검토</li>
+                <li>다른 의학 분야로 확장</li>
+            </ul>
+            
+            <h2>⚖️ 면책사항</h2>
+            <p>본 사이트는 <strong>교육 및 정보 제공 목적</strong>으로만 운영됩니다. 제공되는 정보는 의학적 조언, 진단 또는 치료를 대체할 수 없습니다.</p>
+            <p>자세한 내용은 <a href="disclaimer.html" style="color: #003366; text-decoration: underline;">면책조항 페이지</a>를 참고하시기 바랍니다.</p>
+            
+            <h2>📬 피드백 환영</h2>
+            <p>개선 아이디어나 추가하고 싶은 RSS 소스가 있으시면 언제든지 <a href="contact.html" style="color: #003366; text-decoration: underline;">연락처</a>로 의견을 보내주세요!</p>
+            
+            <div class="feature-box" style="background: #e8f4fd; border-left-color: #FFD700;">
+                <h3>💡 왜 "LUMEN"인가요?</h3>
+                <p><strong>Lumen</strong>은 라틴어로 "빛"을 의미합니다. 내시경 검사에서 빛을 통해 몸 속을 밝히듯이, 우리는 <strong>의학 정보에 빛을 비춰 명확하게 전달</strong>하고자 합니다.</p>
+                <p>또한 <strong>Lighting Up Medical Education & News</strong>의 약자로, 의료 현장에 지식의 빛을 밝히겠다는 다짐을 담고 있습니다.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2024 <a href="index.html">LUMEN</a> | <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
+            Made with ❤️ by 김대현 | AI 큐레이션 | 매일 오전 8시 업데이트
+        </p>
+    </footer>
+</body>
+</html>
