@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="해외 최신 내시경 의학 뉴스를 AI가 매일 한국어로 큐레이션합니다">
+    <meta name="keywords" content="내시경,의학,뉴스,소화기내과,gastroenterology,endoscopy">
+    <title>LUMEN - 내시경 뉴스</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }
+        
+        /* 헤더 */
+        header { background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header h1 { font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .update { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }
+        
+        /* 네비게이션 */
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        nav a {
+            color: #003366;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #FFD700; }
+        
+        /* 컨테이너 */
+        .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
+        
+        /* 면책 배너 */
+        .disclaimer-banner {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-left: 5px solid #ffc107;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255,193,7,0.2);
+        }
+        .disclaimer-banner p {
+            color: #856404;
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .disclaimer-banner strong {
+            color: #d9534f;
+            font-weight: 600;
+        }
+        .disclaimer-banner a {
+            color: #003366;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        
+        /* 간결한 통계 */
+        .stats-inline { background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .stat-item { display: flex; align-items: center; gap: 0.5rem; }
+        .stat-item .number { font-size: 1.5rem; font-weight: bold; color: #003366; }
+        .stat-item .label { font-size: 0.85rem; color: #666; }
+        
+        /* 뉴스 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: all 0.3s; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+        
+        /* 카테고리 태그 */
+        .tag { display: inline-block; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem; }
+        .tag-tech { background: #4A90E2; }
+        .tag-regulation { background: #E74C3C; }
+        .tag-research { background: #2ECC71; }
+        .tag-safety { background: #F39C12; }
+        .tag-education { background: #9B59B6; }
+        
+        /* 출처 뱃지 */
+        .source-badge { display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; }
+        
+        /* 제목 */
+        .title { font-size: 1.3rem; font-weight: bold; color: #003366; margin-bottom: 1rem; line-height: 1.4; }
+        
+        /* 요약 */
+        .summary { font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }
+        
+        /* 메타 */
+        .meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; flex-wrap: wrap; gap: 0.5rem; }
+        
+        /* 모달 (팝업) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
+        .modal-content { background-color: white; margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .close { color: #aaa; float: right; font-size: 2rem; font-weight: bold; cursor: pointer; line-height: 1; }
+        .close:hover { color: #000; }
+        .modal-title { font-size: 1.6rem; font-weight: 700; color: #003366; margin-bottom: 1rem; padding-right: 2rem; }
+        .modal-original-title { font-size: 1rem; color: #666; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; }
+        .modal-summary { font-size: 1.05rem; color: #333; line-height: 1.8; margin-bottom: 1.5rem; }
+        .modal-meta { display: flex; justify-content: space-between; font-size: 0.9rem; color: #888; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .btn { display: inline-block; background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 0.8rem 2rem; border-radius: 6px; text-decoration: none; transition: all 0.3s; font-weight: 500; box-shadow: 0 2px 6px rgba(0,51,102,0.3); }
+        .btn:hover { background: linear-gradient(135deg, #004d99 0%, #003366 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,51,102,0.4); }
+        
+        /* 소개 섹션 */
+        .about { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 3rem; border-left: 4px solid #FFD700; }
+        .about h3 { color: #003366; margin-bottom: 1rem; }
+        .about p { color: #666; font-size: 0.95rem; }
+        
+        /* 푸터 */
+        footer { background: #003366; color: white; text-align: center; padding: 2rem; margin-top: 2rem; }
+        footer a { color: #FFD700; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        
+        /* 반응형 */
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .grid { grid-template-columns: 1fr; }
+            .stats-inline { flex-direction: column; align-items: flex-start; }
+            nav ul { flex-direction: column; align-items: center; gap: 1rem; }
+            .modal-content { width: 95%; margin: 10% auto; padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>✨ LUMEN</h1>
+        <p class="update">📅 2025년 12월 04일</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">🏠 홈</a></li>
+            <li><a href="about.html">📖 소개</a></li>
+            <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
+            <li><a href="terms.html">📋 이용약관</a></li>
+            <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
+            <li><a href="contact.html">📧 연락처</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <!-- 면책 문구 -->
+        <div class="disclaimer-banner">
+            <p><strong>⚠️ 의료 정보 안내:</strong> 본 사이트의 정보는 교육 목적이며 의학적 조언을 대체할 수 없습니다. 
+            자세한 내용은 <a href="disclaimer.html">면책조항</a>을 참고하세요.</p>
+        </div>
+        <!-- 간결한 통계 (한 줄) -->
+        <div class="stats-inline">
+            <div class="stat-item">
+                <span class="number">18</span>
+                <span class="label">이 뉴스</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="number">1</span>
+                <span class="label">규제/가이드라인</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="number">3</span>
+                <span class="label">기술/혁신</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="number">14</span>
+                <span class="label">연구/임상</span>
+            </div>
+
+        </div>
+        
+        <div class="grid">
+
+            <div class="card" onclick="openModal(0)">
+                <span class="tag tag-regulation">규제/가이드라인</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">내시경 센터 개소: 소화기 건강 접근성 향상</h3>
+                <p class="summary">소화기 건강 관리를 위한 내시경 센터가 개소되어 접근성이 향상될 것으로 기대된다. 이는 소화기 질환 예방 및 조기 진단에 기여할 수 있다.</p>
+                <div class="meta">
+                    <span>📰 Google News - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(1)">
+                <span class="tag tag-tech">기술/혁신</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">레스터 새 내시경실, 대기 감소</h3>
+                <p class="summary">레스터에 1800만 파운드 규모의 새로운 내시경실이 개설되어 대기자 명단 감소에 기여할 것으로 예상됩니다.</p>
+                <div class="meta">
+                    <span>📰 Google News - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(2)">
+                <span class="tag tag-tech">기술/혁신</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">내시경 비만 치료 새 기준 제시</h3>
+                <p class="summary">MOVIVA®를 이용한 내시경 비만 치료가 새로운 기준을 제시하고 있다. 새로운 기술을 통해 비만 치료 효과를 높일 수 있음을 시사한다.</p>
+                <div class="meta">
+                    <span>📰 Google News - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(3)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">Hepatic Duct Foreign Body Mimicking Cholangiocarci</h3>
+                <p class="summary">Hepatic Duct Foreign Body Mimicking Cholangiocarcinoma: Case...</p>
+                <div class="meta">
+                    <span>📰 Google News - Gastroenterology</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(4)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">Endoscopy Environmental Impacts Reduction - Gastro</h3>
+                <p class="summary">Endoscopy Environmental Impacts Reduction - Gastroenterology...</p>
+                <div class="meta">
+                    <span>📰 Google News - Gastroenterology</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(5)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">Office-Based Endoscopy Model Offers Way Forward fo</h3>
+                <p class="summary">Office-Based Endoscopy Model Offers Way Forward for Outpatie...</p>
+                <div class="meta">
+                    <span>📰 Google News - Gastroenterology</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(6)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">Colon cancer ccreening: A life-saving step you sho</h3>
+                <p class="summary">Colon cancer ccreening: A life-saving step you shouldn’t wai...</p>
+                <div class="meta">
+                    <span>📰 Google News - Colonoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(7)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">Understanding Barriers to Colon Cancer Screening A</h3>
+                <p class="summary">Understanding Barriers to Colon Cancer Screening Among Indiv...</p>
+                <div class="meta">
+                    <span>📰 Google News - Colonoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(8)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐</span>
+                <h3 class="title">Equitable colorectal cancer screening implementati</h3>
+                <p class="summary">Equitable colorectal cancer screening implementation framewo...</p>
+                <div class="meta">
+                    <span>📰 Google News - Colonoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(9)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">크론병 치료, 해조류의 힘?</h3>
+                <p class="summary">해조류를 이용하여 크론병을 치료하는 연구가 진행 중이며, 해조류가 장 건강에 미치는 영향에 대한 가능성을 제시합니다.</p>
+                <div class="meta">
+                    <span>📰 Medical Xpress - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(10)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">식도암 예방, 개념 증명!</h3>
+                <p class="summary">연구 결과, 식도암 예방 가능성의 개념 증명에 성공했다. 새로운 예방 전략 개발의 토대가 될 것으로 기대된다.</p>
+                <div class="meta">
+                    <span>📰 Medical Xpress - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(11)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">Is stomach cancer on the rise in young adults?</h3>
+                <p class="summary">Is stomach cancer on the rise in young adults?...</p>
+                <div class="meta">
+                    <span>📰 Medical Xpress - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(12)">
+                <span class="tag tag-tech">기술/혁신</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">깊은 폐 종양 접근법 개발</h3>
+                <p class="summary">새로운 내시경 기술로 접근이 어려웠던 깊은 폐 종양에 접근 가능해졌다. 이는 폐암 진단 및 치료에 혁신을 가져올 수 있다.</p>
+                <div class="meta">
+                    <span>📰 Medical Xpress - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(13)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">가공식품, 조기 대장암 위험↑</h3>
+                <p class="summary">과도하게 가공된 식품 섭취가 성인의 조기 발병 대장암 전구체 발생률 증가와 관련 있다는 연구 결과가 나왔습니다. 식습관과 대장암 발병 위험 간의 연관성을 시사합니다.</p>
+                <div class="meta">
+                    <span>📰 Medical Xpress - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(14)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">Experts launch digital hub to transform bowel canc</h3>
+                <p class="summary">Experts launch digital hub to transform bowel cancer prevent...</p>
+                <div class="meta">
+                    <span>📰 News-Medical - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(15)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">Johns Hopkins study links mild pancreatic duct dil</h3>
+                <p class="summary">Johns Hopkins study links mild pancreatic duct dilatation to...</p>
+                <div class="meta">
+                    <span>📰 News-Medical - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(16)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">Ingestible capsule developed for the diagnosis of </h3>
+                <p class="summary">Ingestible capsule developed for the diagnosis of acute mese...</p>
+                <div class="meta">
+                    <span>📰 News-Medical - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+            <div class="card" onclick="openModal(17)">
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">⭐⭐⭐⭐</span>
+                <h3 class="title">Intelligent learning can accelerate global efforts</h3>
+                <p class="summary">Intelligent learning can accelerate global efforts to preven...</p>
+                <div class="meta">
+                    <span>📰 News-Medical - Endoscopy</span>
+                    <span>2025-12-04</span>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="about">
+            <h3>🩺 LUMEN이란?</h3>
+            <p>바쁜 의료 현장을 위해 <strong>Gastroenterology & Endoscopy News, Medical Xpress, News-Medical</strong> 등 
+            해외 최신 내시경 뉴스를 AI(Google Gemini)가 매일 한국어로 브리핑합니다.</p>
+        </div>
+    </div>
+    
+    <!-- 모달 팝업 -->
+
+    <div id="modal0" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(0)">&times;</span>
+            <span class="tag tag-regulation">규제/가이드라인</span>
+            <h2 class="modal-title">내시경 센터 개소: 소화기 건강 접근성 향상</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Check Your Health- Endoscopy Centers Opening: Making Digestive Health More Accessible - KUTV
+            </div>
+            <p class="modal-summary">KUTV 뉴스에 따르면, 소화기 건강 관리를 위해 새로운 내시경 센터가 개소되어 지역 주민들의 접근성이 높아졌다. 이는 소화기 질환 검진의 편리성을 증진시켜 질병 예방 및 조기 진단율을 높이는 데 기여할 것이다. 센터 개소를 통해 소화기 건강에 대한 인식 개선과 정기 검진의 중요성을 강조하고 있다.</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMizwFBVV95cUxQaHlkaVVKMXB3RjQ1S3U1TmFPZmREZ1J0cnU3TFRBenAtOVJ1c0RnaGQwOUFlNG83N0RuSVZIRmxGWnFtdDd3ZkVCSUZrMFFfLVY5d1hGVzBtUW5Vd1B0ZS16S3FTS3BzMHdFdWV4UGNVczhWS09QSzQ0Nk1UMUtfQkpISXBCcmRnUUFlakVJU2NVTHhtZll3WFRzM2diMWxPbEdUMnhfV0pZeGFCNDlLZ1ZxSWotX3ZsTDJWSjVlZks2YS0wZVlHOWdkMW02eWs?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(1)">&times;</span>
+            <span class="tag tag-tech">기술/혁신</span>
+            <h2 class="modal-title">레스터 새 내시경실, 대기 감소</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> New £18m endoscopy unit in Leicester 'will cut waiting list' - BBC
+            </div>
+            <p class="modal-summary">BBC 뉴스에 따르면 레스터에 1800만 파운드 규모의 최신 내시경실이 문을 열었습니다. 이는 지역 내시경 검사 접근성을 높여 환자 대기 시간을 단축하는 데 목적이 있습니다. 새로운 시설은 최첨단 장비와 효율적인 시스템을 갖추고 있어 더 많은 환자를 신속하게 치료할 수 있을 것으로 기대됩니다.</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTFByQlNWWjBJZGtYaF9zTnFsdDlQVzIwdVNZUl84clU2YWVZZnBMSGRxclFwREJGYlhtUnZCWVZfdG9VNndFbjdfZWZkcnhtZ3NYM2htVWxOWTlPVG5WSXJZ0gFfQVVfeXFMUHJCU1ZaMElka1hoX3NOcWx0OVBXMjB1U1lSXzhyVTZhZVlmcExIZHFyUXBEQkZiWG1SdkJZVl90b1U2d0VuN19lZmRyeG1nc1gzaG1VbE5ZOU9UblZJclk?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(2)">&times;</span>
+            <span class="tag tag-tech">기술/혁신</span>
+            <h2 class="modal-title">내시경 비만 치료 새 기준 제시</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> GMA with MOVIVA®: setting new standards in endoscopic bariatric treatment - Yahoo Finance
+            </div>
+            <p class="modal-summary">MOVIVA®라는 새로운 기술이 내시경을 이용한 비만 치료 분야에서 새로운 표준을 제시하고 있다. Yahoo Finance에 따르면, 이 기술은 기존 내시경 비만 치료의 한계를 극복하고 더 나은 결과를 제공할 수 있을 것으로 기대된다. MOVIVA®의 구체적인 작동 원리나 임상 결과에 대한 추가 정보는 필요하다.</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMijgFBVV95cUxONnNYRXNfV3RDUC05V3ozRUJZS2F3R2Q0U2V2VGwycG90eVp0c3ZIc1paSzlBcTdrbTQ1UTQ3LVdTanVmVVFkOFU4VkZNdjBLS2RDTWo5QlFDWGxEZFNwbGNHX1EtaHVUbG5HeUFpNVJPdDg1Wm9HaTFYblJUTGRTMjN2NWNMLUtKdW5KbkdB?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal3" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(3)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Hepatic Duct Foreign Body Mimicking Cholangiocarci</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Hepatic Duct Foreign Body Mimicking Cholangiocarcinoma: Case Analysis, Diagnostic Challenges, and Literature Review - Cureus
+            </div>
+            <p class="modal-summary">Hepatic Duct Foreign Body Mimicking Cholangiocarcinoma: Case Analysis, Diagnosti...</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Gastroenterology</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMi5gFBVV95cUxQZmdQaVNrdG9wczVucS1UNXhZM0xCNDItNWR6QjRQSml5eGNrVmtsU21TUVNGZ1duejV6WnRSd0VqRzNabXpaZmZZSGl0cmZuWGd1bWF2NU1TNzY1ZU8tczJWa2ttUHNmWjZpem45bUZMdjNESm1mOUQxU3BFSHk5MHU3WXpxRFB5bVlHR1JRYnhGYkFpaTNxVHRpb0ZhSHMyTDVwSEhiYWUzcWQ2UUgzYXdTUVdHVnZVZU96TXMwLVFVZGd2VWRfVVRTMmJrc2NsQ2l0SDJ5YUlwZ3BRWnNPNjZvTmNkZw?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal4" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(4)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Endoscopy Environmental Impacts Reduction - Gastro</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Endoscopy Environmental Impacts Reduction - Gastroenterology & Endoscopy News
+            </div>
+            <p class="modal-summary">Endoscopy Environmental Impacts Reduction - Gastroenterology & Endoscopy News...</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Gastroenterology</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMirAFBVV95cUxOZ0VHTUxBd0dvV2pQU0ZrR0V4RmJ4T3dveVkzQWRhQms1YU5vMmV6WDQ1dWdkMnRyakFQT1Q2QVM1VmJxUll2RW9iODdXMVAwaVJGd0ZXc3FMamR5eVc1UWV2cWYwTnd4cUxLRUlETTdDNS04SnpxRmlJaElza0o3bUI5TDJDdXlibmNqQnY1a3lVbU4yazgtVHZ0ZTZfUTRYWTV5REdSZEtWbnZU?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal5" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(5)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Office-Based Endoscopy Model Offers Way Forward fo</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Office-Based Endoscopy Model Offers Way Forward for Outpatient GI - Medscape
+            </div>
+            <p class="modal-summary">Office-Based Endoscopy Model Offers Way Forward for Outpatient GI - Medscape...</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Gastroenterology</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMirAFBVV95cUxPX0VrNFJoeVZCWF9UdDhsZnZyZk1QZGNqelc4R1EzX1ctZ1dXekJ1d2tJQ01OaWYtRXdDcTZqNG01eFVWQ2ZxVzRYMXVXR1JXaDdHRjJVbW9INlV1YXRIRzNMd3VQdktDQkxBN3FZQTV2UHl4dXMtaFFNUWIzdHkwdU1jZWtNdndWd3BLcnYyNDNvR25CWnFmYXozQjd0QWVrQV9uWG1Vb2FzaXZr?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal6" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(6)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Colon cancer ccreening: A life-saving step you sho</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Colon cancer ccreening: A life-saving step you shouldn’t wait to take  - Bozeman Daily Chronicle
+            </div>
+            <p class="modal-summary">Colon cancer ccreening: A life-saving step you shouldn’t wait to take  - Bozeman...</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Colonoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMihwJBVV95cUxPQW9hM0FwOWdncEZNakVqYTVLWE40ZDhVQ3czQlRJd2VnTXNZdl9INXFsWUtCYW5FUEpjYjRJNmV2cTJnWUwxRU45Y3lrMF9TSkhpM2pXMGI2Sm1yOVZaODZIVnlweEVjVTFsbnVxaHlLS3pyZmZHdGhHc25YMGRscjlZTm11Y2tBUW9rbFdZTUZWT2RVSmI1ams2ckRkTEFzeEt4NW13RWZjaVpaUVZjNmxDTTRETndnUUtLZXRMdkdKbXEwNjROck9IVUdPNzBNdklGQUJWWjJOVnh0QW4zWm5NWEdBZ3o2NWlKeGk5VXhIR3RzcGdtVHFySzk1Mk1CYWlrOUxOVdIBjAJBVV95cUxQMWZKdk8yTGVuSHdiNHZPYk1ock01X19obGJaMjZWbWxsaTAxOGlXNkREQkU1THQ0T0t0WjF6UndTbTlqNXF0cGk4TlFyV3BmUlhJN2d5M2JlZW9yMUp5cm1IMHdDRDJaRUdBeXVSR09ucHBSQktPdVR3LWF1czdXWkhNUWdoTV93cW9Hd3BlTjJhNzlQbzlBWGlMR0RwbFFfT2ozdWJIRGFwU0pfTWQwSE9UMVk0Q1VVa1c3TGJwSGdJYWEyNDBYZUY1MGRCZVpxdHg1LUMyV1Bza3Z4czVqVUFMaDItTEc3SVNKeENkZHNLZzdWcWtFOVVpejYwS0pudFRQczVMY084N19P?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal7" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(7)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Understanding Barriers to Colon Cancer Screening A</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Understanding Barriers to Colon Cancer Screening Among Individuals Experiencing Housing Insecurity in Los Angeles - Cureus
+            </div>
+            <p class="modal-summary">Understanding Barriers to Colon Cancer Screening Among Individuals Experiencing ...</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Colonoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMi5wFBVV95cUxPMUhSRnVXSGFkNjM1amsxMERXR01EUXF3M3pLQ0pWbE05YzNfcE04czRTSHB5UFVHMDNxSXRDalBIX19ESndxcDlYZUNVdGpIU20xb1NfREoyOVNsRzFfTldCaFhpb2xUVUhBM3lISkFzV0ZMS2hYNjA1WGxwLWtjS1JHeGVIa3lPOVFGZEFZNnRIaThfR01WMUY5eXAxYU1OTGp6VTl0NmpHcWVweW5KTURJNUI4aTdKS0lxb2xRbjhNbU9XcEpBd25XRzdTYXdfeEtGak5pU1hvM3RNREg5b3dnbGtOM2c?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal8" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(8)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Equitable colorectal cancer screening implementati</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Equitable colorectal cancer screening implementation framework via a modified Delphi Consensus for Romanian healthcare - Nature
+            </div>
+            <p class="modal-summary">Equitable colorectal cancer screening implementation framework via a modified De...</p>
+            <div class="modal-meta">
+                <span>📰 Google News - Colonoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE50RkIwc3hwY3ctRmI4NHJ2RHhXOGxXQzA4YW5FQkw4NE9TT2toUTAxblFEUkVUWDlpS3pSOGxlY3F4NnJkTURIT2dqdEVQNTVrdXJmeC1xT050Q3NZOVR3?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal9" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(9)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">크론병 치료, 해조류의 힘?</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Fighting Crohn's with algae—can it heal the gut?
+            </div>
+            <p class="modal-summary">새로운 연구에서 해조류가 크론병 치료에 잠재적인 효과가 있는지 조사하고 있습니다. 크론병은 만성 염증성 장 질환으로, 해조류의 특정 성분이 장 내 염증을 줄이고 장 건강을 개선할 수 있다는 가설을 세웠습니다. 이 연구는 해조류를 기반으로 한 새로운 크론병 치료법 개발 가능성을 탐색하고 있습니다.</p>
+            <div class="modal-meta">
+                <span>📰 Medical Xpress - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://medicalxpress.com/news/2025-11-crohn-algae-gut.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal10" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(10)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">식도암 예방, 개념 증명!</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Study demonstrates proof of concept for preventing esophageal cancer
+            </div>
+            <p class="modal-summary">식도암 예방에 대한 개념 증명 연구가 성공적으로 진행되었다. 이는 식도암 발생을 억제할 수 있는 잠재적 전략을 제시하며, 향후 임상 시험을 통해 효능을 검증할 필요가 있다. 연구 결과는 식도암 고위험군을 위한 새로운 예방 접근법 개발에 기여할 것으로 예상된다.</p>
+            <div class="modal-meta">
+                <span>📰 Medical Xpress - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://medicalxpress.com/news/2025-11-proof-concept-esophageal-cancer.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal11" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(11)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Is stomach cancer on the rise in young adults?</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Is stomach cancer on the rise in young adults?
+            </div>
+            <p class="modal-summary">Is stomach cancer on the rise in young adults?...</p>
+            <div class="modal-meta">
+                <span>📰 Medical Xpress - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://medicalxpress.com/news/2025-11-stomach-cancer-young-adults.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal12" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(12)">&times;</span>
+            <span class="tag tag-tech">기술/혁신</span>
+            <h2 class="modal-title">깊은 폐 종양 접근법 개발</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Reaching the unreachable: Endoscopy technique opens route to deep lung tumors
+            </div>
+            <p class="modal-summary">기존 내시경으로는 도달하기 어려웠던 폐 깊숙한 곳의 종양에 접근할 수 있는 새로운 내시경 기술이 개발되었다. 이 기술은 폐암 진단 정확도를 높이고, 더 정밀한 치료 계획 수립을 가능하게 한다. 또한, 조직 검사 및 치료 접근성을 향상시켜 환자 생존율 향상에 기여할 것으로 기대된다. 향후 임상 적용 및 추가 연구를 통해 기술의 효용성을 검증할 필요가 있다.</p>
+            <div class="modal-meta">
+                <span>📰 Medical Xpress - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://medicalxpress.com/news/2025-11-unreachable-endoscopy-technique-route-deep.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal13" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(13)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">가공식품, 조기 대장암 위험↑</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Ultra-processed foods tied to higher rates of early-onset colorectal cancer precursors in adults
+            </div>
+            <p class="modal-summary">연구에 따르면, 과도하게 가공된 식품을 많이 섭취하는 성인에게서 조기에 대장암으로 발전할 수 있는 전구체(선종) 발견율이 더 높은 것으로 나타났습니다. 이는 식습관, 특히 초가공식품 섭취가 젊은 성인의 대장암 발병 위험에 영향을 미칠 수 있음을 의미합니다. 건강한 식습관의 중요성을 강조하며, 향후 식습관과 대장암 위험 간의 인과관계를 밝히는 추가 연구가 필요합니다.</p>
+            <div class="modal-meta">
+                <span>📰 Medical Xpress - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://medicalxpress.com/news/2025-11-ultra-foods-higher-early-onset.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal14" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(14)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Experts launch digital hub to transform bowel canc</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Experts launch digital hub to transform bowel cancer prevention and care
+            </div>
+            <p class="modal-summary">Experts launch digital hub to transform bowel cancer prevention and care...</p>
+            <div class="modal-meta">
+                <span>📰 News-Medical - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://www.news-medical.net/news/20251122/Experts-launch-digital-hub-to-transform-bowel-cancer-prevention-and-care.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal15" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(15)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Johns Hopkins study links mild pancreatic duct dil</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Johns Hopkins study links mild pancreatic duct dilatation to higher cancer risk
+            </div>
+            <p class="modal-summary">Johns Hopkins study links mild pancreatic duct dilatation to higher cancer risk...</p>
+            <div class="modal-meta">
+                <span>📰 News-Medical - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://www.news-medical.net/news/20251114/Johns-Hopkins-study-links-mild-pancreatic-duct-dilatation-to-higher-cancer-risk.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal16" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(16)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Ingestible capsule developed for the diagnosis of </h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Ingestible capsule developed for the diagnosis of acute mesenteric ischemia
+            </div>
+            <p class="modal-summary">Ingestible capsule developed for the diagnosis of acute mesenteric ischemia...</p>
+            <div class="modal-meta">
+                <span>📰 News-Medical - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://www.news-medical.net/news/20251022/Ingestible-capsule-developed-for-the-diagnosis-of-acute-mesenteric-ischemia.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    <div id="modal17" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal(17)">&times;</span>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">Intelligent learning can accelerate global efforts</h2>
+            <div class="modal-original-title">
+                <strong>원문 제목:</strong> Intelligent learning can accelerate global efforts to prevent cervical cancer
+            </div>
+            <p class="modal-summary">Intelligent learning can accelerate global efforts to prevent cervical cancer...</p>
+            <div class="modal-meta">
+                <span>📰 News-Medical - Endoscopy</span>
+                <span>2025-12-04</span>
+            </div>
+            <a href="https://www.news-medical.net/news/20251022/Intelligent-learning-can-accelerate-global-efforts-to-prevent-cervical-cancer.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+        </div>
+    </div>
+
+    
+    <footer>
+        <p>© 2024 <a href="index.html">LUMEN</a> | 
+        <a href="about.html">소개</a> | 
+        <a href="privacy.html">개인정보처리방침</a> | 
+        <a href="terms.html">이용약관</a> | 
+        <a href="disclaimer.html">면책조항</a> | 
+        <a href="contact.html">연락처</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
+            AI 큐레이션 | 매일 오전 8시 업데이트 | 문의: lumenmedi@gmail.com
+        </p>
+    </footer>
+    
+    <script>
+        function openModal(index) {
+            document.getElementById('modal' + index).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(index) {
+            document.getElementById('modal' + index).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>
+    
