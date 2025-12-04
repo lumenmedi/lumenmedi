@@ -38,7 +38,7 @@ jobs:
         git config --global user.name 'LumenBot'
         git config --global user.email 'bot@lumenmedi.com'
         
-        git add index.html
+        git add -f index.html
         
         if ! git diff --cached --quiet; then
           git commit -m "🚀 Daily Update: $(date +'%Y-%m-%d %H:%M UTC')"
