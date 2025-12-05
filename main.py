@@ -1,41 +1,41 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LUMEN - 의학 정보 큐레이션 사이트 (네비게이션 + 면책 배너 포함)
+LUMEN - ì˜í•™ ì •ë³´ íë ˆì´ì…˜ ì‚¬ì´íŠ¸ (ë„¤ë¹„ê²Œì´ì…˜ + ë©´ì±… ë°°ë„ˆ í¬í•¨)
 """
 
 import os
 from dotenv import load_dotenv
 import feedparser
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 import time
 import requests
 import json
 
 # =========================================================
-# 설정
+# ì„¤ì •
 # =========================================================
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
-    print("⚠️ API 키가 없습니다!")
+    print("âš ï¸ API í‚¤ê°€ ì—†ìŠµë‹ˆë‹¤!")
     exit()
 
-print(f"🔑 API 키 로드 성공: {GEMINI_API_KEY[:5]}...")
+print(f"ðŸ”‘ API í‚¤ ë¡œë“œ ì„±ê³µ: {GEMINI_API_KEY[:5]}...")
 
 # =========================================================
-# Gemini 2.0 Flash로 제목 번역 + 짧은/긴 요약 + 카테고리 분류
+# Gemini 2.0 Flashë¡œ ì œëª© ë²ˆì—­ + ì§§ì€/ê¸´ ìš”ì•½ + ì¹´í…Œê³ ë¦¬ ë¶„ë¥˜
 # =========================================================
 def get_ai_summary_and_category(title):
     """
-    뉴스 제목을 보고:
-    1. 한국어 제목 번역
-    2. 짧은 요약 (1-2줄)
-    3. 긴 요약 (3-4줄)
-    4. 카테고리 자동 분류
+    ë‰´ìŠ¤ ì œëª©ì„ ë³´ê³ :
+    1. í•œêµ­ì–´ ì œëª© ë²ˆì—­
+    2. ì§§ì€ ìš”ì•½ (1-2ì¤„)
+    3. ê¸´ ìš”ì•½ (3-4ì¤„)
+    4. ì¹´í…Œê³ ë¦¬ ìžë™ ë¶„ë¥˜
     """
-    print(f"    🤖 AI 번역 및 요약 중...")
+    print(f"    ðŸ¤– AI ë²ˆì—­ ë° ìš”ì•½ ì¤‘...")
     
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
     
@@ -44,28 +44,28 @@ def get_ai_summary_and_category(title):
     payload = {
         "contents": [{
             "parts": [{
-                "text": f"""당신은 10년 차 베테랑 소화기내과 간호사입니다.
-아래 영어 뉴스 제목을 보고 다음 작업을 수행하세요:
+                "text": f"""ë‹¹ì‹ ì€ 10ë…„ ì°¨ ë² í…Œëž‘ ì†Œí™”ê¸°ë‚´ê³¼ ê°„í˜¸ì‚¬ìž…ë‹ˆë‹¤.
+ì•„ëž˜ ì˜ì–´ ë‰´ìŠ¤ ì œëª©ì„ ë³´ê³  ë‹¤ìŒ ìž‘ì—…ì„ ìˆ˜í–‰í•˜ì„¸ìš”:
 
-1. 제목을 한국어로 번역 (간결하게, 15자 이내)
-2. 짧은 요약 (1-2문장, 핵심만)
-3. 긴 요약 (3-4문장, 상세하게)
-4. 카테고리 분류
+1. ì œëª©ì„ í•œêµ­ì–´ë¡œ ë²ˆì—­ (ê°„ê²°í•˜ê²Œ, 15ìž ì´ë‚´)
+2. ì§§ì€ ìš”ì•½ (1-2ë¬¸ìž¥, í•µì‹¬ë§Œ)
+3. ê¸´ ìš”ì•½ (3-4ë¬¸ìž¥, ìƒì„¸í•˜ê²Œ)
+4. ì¹´í…Œê³ ë¦¬ ë¶„ë¥˜
 
-[카테고리 옵션]
-- 기술/혁신: AI, 새로운 장비, 기술 발전
-- 규제/가이드라인: FDA 승인, 정책, 지침
-- 연구/임상: 임상시험, 연구 결과, 통계
-- 안전/품질: 감염 관리, 의료사고, 안전
-- 교육/훈련: 교육 프로그램, 워크샵
+[ì¹´í…Œê³ ë¦¬ ì˜µì…˜]
+- ê¸°ìˆ /í˜ì‹ : AI, ìƒˆë¡œìš´ ìž¥ë¹„, ê¸°ìˆ  ë°œì „
+- ê·œì œ/ê°€ì´ë“œë¼ì¸: FDA ìŠ¹ì¸, ì •ì±…, ì§€ì¹¨
+- ì—°êµ¬/ìž„ìƒ: ìž„ìƒì‹œí—˜, ì—°êµ¬ ê²°ê³¼, í†µê³„
+- ì•ˆì „/í’ˆì§ˆ: ê°ì—¼ ê´€ë¦¬, ì˜ë£Œì‚¬ê³ , ì•ˆì „
+- êµìœ¡/í›ˆë ¨: êµìœ¡ í”„ë¡œê·¸ëž¨, ì›Œí¬ìƒµ
 
-영어 뉴스 제목: {title}
+ì˜ì–´ ë‰´ìŠ¤ ì œëª©: {title}
 
-응답 형식 (반드시 이 형식으로):
-제목: [한국어 번역 제목]
-카테고리: [위 옵션 중 하나]
-짧은요약: [1-2문장]
-긴요약: [3-4문장]"""
+ì‘ë‹µ í˜•ì‹ (ë°˜ë“œì‹œ ì´ í˜•ì‹ìœ¼ë¡œ):
+ì œëª©: [í•œêµ­ì–´ ë²ˆì—­ ì œëª©]
+ì¹´í…Œê³ ë¦¬: [ìœ„ ì˜µì…˜ ì¤‘ í•˜ë‚˜]
+ì§§ì€ìš”ì•½: [1-2ë¬¸ìž¥]
+ê¸´ìš”ì•½: [3-4ë¬¸ìž¥]"""
             }]
         }],
         "generationConfig": {
@@ -87,44 +87,44 @@ def get_ai_summary_and_category(title):
                     text = candidate['content']['parts'][0].get('text', '')
                     
                     if text:
-                        # 기본값
+                        # ê¸°ë³¸ê°’
                         translated_title = title[:50]
-                        category = "연구/임상"
+                        category = "ì—°êµ¬/ìž„ìƒ"
                         short_summary = text.strip()
                         long_summary = text.strip()
                         
                         lines = text.strip().split('\n')
                         for line in lines:
-                            if '제목:' in line or 'Title:' in line:
+                            if 'ì œëª©:' in line or 'Title:' in line:
                                 translated_title = line.split(':', 1)[1].strip()
-                            elif '카테고리:' in line or 'Category:' in line:
+                            elif 'ì¹´í…Œê³ ë¦¬:' in line or 'Category:' in line:
                                 category = line.split(':', 1)[1].strip()
-                            elif '짧은요약:' in line or 'Short:' in line:
+                            elif 'ì§§ì€ìš”ì•½:' in line or 'Short:' in line:
                                 short_summary = line.split(':', 1)[1].strip()
-                            elif '긴요약:' in line or 'Long:' in line:
+                            elif 'ê¸´ìš”ì•½:' in line or 'Long:' in line:
                                 long_summary = line.split(':', 1)[1].strip()
                         
-                        print(f"    ✅ 완료! [{category}]\n")
+                        print(f"    âœ… ì™„ë£Œ! [{category}]\n")
                         return translated_title, short_summary, long_summary, category
             
-            print(f"    ⚠️ 파싱 실패\n")
-            return title[:50], f"{title[:60]}...", f"{title[:80]}...", "연구/임상"
+            print(f"    âš ï¸ íŒŒì‹± ì‹¤íŒ¨\n")
+            return title[:50], f"{title[:60]}...", f"{title[:80]}...", "ì—°êµ¬/ìž„ìƒ"
             
         else:
-            print(f"    ❌ API 오류 ({response.status_code})\n")
-            return title[:50], f"{title[:60]}...", f"{title[:80]}...", "연구/임상"
+            print(f"    âŒ API ì˜¤ë¥˜ ({response.status_code})\n")
+            return title[:50], f"{title[:60]}...", f"{title[:80]}...", "ì—°êµ¬/ìž„ìƒ"
             
     except Exception as e:
-        print(f"    ❌ 오류: {str(e)[:50]}\n")
-        return title[:50], f"{title[:60]}...", f"{title[:80]}...", "연구/임상"
+        print(f"    âŒ ì˜¤ë¥˜: {str(e)[:50]}\n")
+        return title[:50], f"{title[:60]}...", f"{title[:80]}...", "ì—°êµ¬/ìž„ìƒ"
 
 
 # ============================================
-# 중복 체크 함수
+# ì¤‘ë³µ ì²´í¬ í•¨ìˆ˜
 # ============================================
 def is_duplicate(title, existing_news, threshold=0.7):
     """
-    제목 유사도를 계산해서 중복 판별
+    ì œëª© ìœ ì‚¬ë„ë¥¼ ê³„ì‚°í•´ì„œ ì¤‘ë³µ íŒë³„
     """
     from difflib import SequenceMatcher
     
@@ -141,41 +141,41 @@ def is_duplicate(title, existing_news, threshold=0.7):
 
 
 # ============================================
-# RSS 피드 수집
+# RSS í”¼ë“œ ìˆ˜ì§‘
 # ============================================
 def fetch_rss_feeds():
-    print("\n📡 여러 RSS 피드에서 최신 기사를 가져오는 중...\n")
+    print("\nðŸ“¡ ì—¬ëŸ¬ RSS í”¼ë“œì—ì„œ ìµœì‹  ê¸°ì‚¬ë¥¼ ê°€ì ¸ì˜¤ëŠ” ì¤‘...\n")
     
     rss_urls = [
         {
             "url": "https://news.google.com/rss/search?q=endoscopy+health&hl=en-US&gl=US&ceid=US:en",
             "name": "Google News - Endoscopy",
-            "priority": "⭐⭐⭐"
+            "priority": "â­â­â­"
         },
         {
             "url": "https://news.google.com/rss/search?q=gastroenterology+endoscopy&hl=en-US&gl=US&ceid=US:en",
             "name": "Google News - Gastroenterology",
-            "priority": "⭐⭐⭐"
+            "priority": "â­â­â­"
         },
         {
             "url": "https://news.google.com/rss/search?q=colonoscopy+screening&hl=en-US&gl=US&ceid=US:en",
             "name": "Google News - Colonoscopy",
-            "priority": "⭐⭐⭐"
+            "priority": "â­â­â­"
         },
         {
             "url": "https://rss.sciencedaily.com/health_medicine/digestive_disorders.xml",
             "name": "ScienceDaily - Digestive",
-            "priority": "⭐⭐⭐⭐"
+            "priority": "â­â­â­â­"
         },
         {
             "url": "https://medicalxpress.com/rss-feed/search/?search=endoscopy",
             "name": "Medical Xpress - Endoscopy",
-            "priority": "⭐⭐⭐⭐"
+            "priority": "â­â­â­â­"
         },
         {
             "url": "https://www.news-medical.net/tag/feed/Endoscopy.aspx",
             "name": "News-Medical - Endoscopy",
-            "priority": "⭐⭐⭐⭐"
+            "priority": "â­â­â­â­"
         },
     ]
     
@@ -187,31 +187,31 @@ def fetch_rss_feeds():
         source_name = feed_info["name"]
         priority = feed_info["priority"]
         
-        print(f"📡 {source_name} ({priority})에서 수집 중...")
+        print(f"ðŸ“¡ {source_name} ({priority})ì—ì„œ ìˆ˜ì§‘ ì¤‘...")
         
         try:
             feed = feedparser.parse(url)
             
             if not feed.entries:
-                print(f"  ⚠️ 피드가 비어있거나 접근 불가\n")
+                print(f"  âš ï¸ í”¼ë“œê°€ ë¹„ì–´ìžˆê±°ë‚˜ ì ‘ê·¼ ë¶ˆê°€\n")
                 continue
             
-            num_articles = 5 if "⭐⭐⭐⭐" in priority else 3
+            num_articles = 5 if "â­â­â­â­" in priority else 3
             
             for i, entry in enumerate(feed.entries[:num_articles], 1):
                 total_count += 1
-                print(f"  [{total_count}] 기사 처리 중...")
+                print(f"  [{total_count}] ê¸°ì‚¬ ì²˜ë¦¬ ì¤‘...")
                 
-                original_title = entry.get('title', '제목 없음')
+                original_title = entry.get('title', 'ì œëª© ì—†ìŒ')
                 link = entry.get('link', '#')
                 published = entry.get('published', '')
                 
-                # 중복 체크
+                # ì¤‘ë³µ ì²´í¬
                 if is_duplicate(original_title, news_items):
-                    print(f"    ⚠️ 중복 뉴스 건너뜀\n")
+                    print(f"    âš ï¸ ì¤‘ë³µ ë‰´ìŠ¤ ê±´ë„ˆëœ€\n")
                     continue
                 
-                # 날짜 파싱
+                # ë‚ ì§œ íŒŒì‹±
                 try:
                     date_formats = [
                         '%a, %d %b %Y %H:%M:%S %z',
@@ -235,7 +235,7 @@ def fetch_rss_feeds():
                 except:
                     formatted_date = datetime.now().strftime('%Y-%m-%d')
 
-                # AI 번역 + 요약 + 카테고리 분류
+                # AI ë²ˆì—­ + ìš”ì•½ + ì¹´í…Œê³ ë¦¬ ë¶„ë¥˜
                 translated_title, short_summary, long_summary, category = get_ai_summary_and_category(original_title)
                 
                 news_item = {
@@ -251,38 +251,38 @@ def fetch_rss_feeds():
                 }
                 news_items.append(news_item)
                 
-                # API Rate Limit 방지
-                print(f"    ⏳ 2초 대기...\n")
+                # API Rate Limit ë°©ì§€
+                print(f"    â³ 2ì´ˆ ëŒ€ê¸°...\n")
                 time.sleep(2)
         
         except Exception as e:
-            print(f"  ❌ {source_name} 피드 오류: {e}\n")
+            print(f"  âŒ {source_name} í”¼ë“œ ì˜¤ë¥˜: {e}\n")
             continue
         
-        print(f"  ✅ {source_name} 완료!\n")
+        print(f"  âœ… {source_name} ì™„ë£Œ!\n")
     
     print(f"=" * 60)
-    print(f"✅ 이 {len(news_items)}개 기사 수집 완료!")
+    print(f"âœ… ì´ {len(news_items)}ê°œ ê¸°ì‚¬ ìˆ˜ì§‘ ì™„ë£Œ!")
     print(f"=" * 60)
     print()
     return news_items
 
 
 # ============================================
-# HTML 생성 (팝업 모달 포함)
+# HTML ìƒì„± (íŒì—… ëª¨ë‹¬ í¬í•¨)
 # ============================================
 def generate_html(news_list):
     # 한국 시간대 (UTC+9) 설정
     kst = timezone(timedelta(hours=9))
-    current_date = datetime.now(kst).strftime("%Y년 %m월 %d일")  # ← KST 시간
+    current_date = datetime.now(kst).strftime("%Y년 %m월 %d일 %H:%M")
     
-    # 카테고리별 색상
+    # ì¹´í…Œê³ ë¦¬ë³„ ìƒ‰ìƒ
     category_tag_class = {
-        "기술/혁신": "tag-tech",
-        "규제/가이드라인": "tag-regulation",
-        "연구/임상": "tag-research",
-        "안전/품질": "tag-safety",
-        "교육/훈련": "tag-education"
+        "ê¸°ìˆ /í˜ì‹ ": "tag-tech",
+        "ê·œì œ/ê°€ì´ë“œë¼ì¸": "tag-regulation",
+        "ì—°êµ¬/ìž„ìƒ": "tag-research",
+        "ì•ˆì „/í’ˆì§ˆ": "tag-safety",
+        "êµìœ¡/í›ˆë ¨": "tag-education"
     }
     
     html = f"""<!DOCTYPE html>
@@ -290,19 +290,19 @@ def generate_html(news_list):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="해외 최신 내시경 의학 뉴스를 AI가 매일 한국어로 큐레이션합니다">
-    <meta name="keywords" content="내시경,의학,뉴스,소화기내과,gastroenterology,endoscopy">
-    <title>LUMEN - 내시경 뉴스</title>
+    <meta name="description" content="í•´ì™¸ ìµœì‹  ë‚´ì‹œê²½ ì˜í•™ ë‰´ìŠ¤ë¥¼ AIê°€ ë§¤ì¼ í•œêµ­ì–´ë¡œ íë ˆì´ì…˜í•©ë‹ˆë‹¤">
+    <meta name="keywords" content="ë‚´ì‹œê²½,ì˜í•™,ë‰´ìŠ¤,ì†Œí™”ê¸°ë‚´ê³¼,gastroenterology,endoscopy">
+    <title>LUMEN - ë‚´ì‹œê²½ ë‰´ìŠ¤</title>
     <style>
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
         body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }}
         
-        /* 헤더 */
+        /* í—¤ë” */
         header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
         header h1 {{ font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
         .update {{ margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }}
         
-        /* 네비게이션 */
+        /* ë„¤ë¹„ê²Œì´ì…˜ */
         nav {{
             background: white;
             padding: 1rem;
@@ -326,10 +326,10 @@ def generate_html(news_list):
         }}
         nav a:hover {{ color: #FFD700; }}
         
-        /* 컨테이너 */
+        /* ì»¨í…Œì´ë„ˆ */
         .container {{ max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }}
         
-        /* 면책 배너 */
+        /* ë©´ì±… ë°°ë„ˆ */
         .disclaimer-banner {{
             background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
             border-left: 5px solid #ffc107;
@@ -354,18 +354,18 @@ def generate_html(news_list):
             font-weight: 500;
         }}
         
-        /* 간결한 통계 */
+        /* ê°„ê²°í•œ í†µê³„ */
         .stats-inline {{ background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }}
         .stat-item {{ display: flex; align-items: center; gap: 0.5rem; }}
         .stat-item .number {{ font-size: 1.5rem; font-weight: bold; color: #003366; }}
         .stat-item .label {{ font-size: 0.85rem; color: #666; }}
         
-        /* 뉴스 그리드 */
+        /* ë‰´ìŠ¤ ê·¸ë¦¬ë“œ */
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }}
         .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: all 0.3s; cursor: pointer; }}
         .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }}
         
-        /* 카테고리 태그 */
+        /* ì¹´í…Œê³ ë¦¬ íƒœê·¸ */
         .tag {{ display: inline-block; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem; }}
         .tag-tech {{ background: #4A90E2; }}
         .tag-regulation {{ background: #E74C3C; }}
@@ -373,19 +373,19 @@ def generate_html(news_list):
         .tag-safety {{ background: #F39C12; }}
         .tag-education {{ background: #9B59B6; }}
         
-        /* 출처 뱃지 */
+        /* ì¶œì²˜ ë±ƒì§€ */
         .source-badge {{ display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; }}
         
-        /* 제목 */
+        /* ì œëª© */
         .title {{ font-size: 1.3rem; font-weight: bold; color: #003366; margin-bottom: 1rem; line-height: 1.4; }}
         
-        /* 요약 */
+        /* ìš”ì•½ */
         .summary {{ font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }}
         
-        /* 메타 */
+        /* ë©”íƒ€ */
         .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; flex-wrap: wrap; gap: 0.5rem; }}
         
-        /* 모달 (팝업) */
+        /* ëª¨ë‹¬ (íŒì—…) */
         .modal {{ display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }}
         .modal-content {{ background-color: white; margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }}
         .close {{ color: #aaa; float: right; font-size: 2rem; font-weight: bold; cursor: pointer; line-height: 1; }}
@@ -397,17 +397,17 @@ def generate_html(news_list):
         .btn {{ display: inline-block; background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 0.8rem 2rem; border-radius: 6px; text-decoration: none; transition: all 0.3s; font-weight: 500; box-shadow: 0 2px 6px rgba(0,51,102,0.3); }}
         .btn:hover {{ background: linear-gradient(135deg, #004d99 0%, #003366 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,51,102,0.4); }}
         
-        /* 소개 섹션 */
+        /* ì†Œê°œ ì„¹ì…˜ */
         .about {{ background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 3rem; border-left: 4px solid #FFD700; }}
         .about h3 {{ color: #003366; margin-bottom: 1rem; }}
         .about p {{ color: #666; font-size: 0.95rem; }}
         
-        /* 푸터 */
+        /* í‘¸í„° */
         footer {{ background: #003366; color: white; text-align: center; padding: 2rem; margin-top: 2rem; }}
         footer a {{ color: #FFD700; text-decoration: none; }}
         footer a:hover {{ text-decoration: underline; }}
         
-        /* 반응형 */
+        /* ë°˜ì‘í˜• */
         @media (max-width: 768px) {{
             header h1 {{ font-size: 1.8rem; }}
             .grid {{ grid-template-columns: 1fr; }}
@@ -419,36 +419,36 @@ def generate_html(news_list):
 </head>
 <body>
     <header>
-        <h1>✨ LUMEN</h1>
-        <p class="update">📅 {current_date}</p>
+        <h1>âœ¨ LUMEN</h1>
+        <p class="update">ðŸ“… {current_date}</p>
     </header>
     
     <nav>
         <ul>
-            <li><a href="index.html">🏠 홈</a></li>
-            <li><a href="about.html">📖 소개</a></li>
-            <li><a href="privacy.html">🔒 개인정보처리방침</a></li>
-            <li><a href="terms.html">📋 이용약관</a></li>
-            <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
-            <li><a href="contact.html">📧 연락처</a></li>
+            <li><a href="index.html">ðŸ  í™ˆ</a></li>
+            <li><a href="about.html">ðŸ“– ì†Œê°œ</a></li>
+            <li><a href="privacy.html">ðŸ”’ ê°œì¸ì •ë³´ì²˜ë¦¬ë°©ì¹¨</a></li>
+            <li><a href="terms.html">ðŸ“‹ ì´ìš©ì•½ê´€</a></li>
+            <li><a href="disclaimer.html">âš–ï¸ ë©´ì±…ì¡°í•­</a></li>
+            <li><a href="contact.html">ðŸ“§ ì—°ë½ì²˜</a></li>
         </ul>
     </nav>
     
     <div class="container">
-        <!-- 면책 문구 -->
+        <!-- ë©´ì±… ë¬¸êµ¬ -->
         <div class="disclaimer-banner">
-            <p><strong>⚠️ 의료 정보 안내:</strong> 본 사이트의 정보는 교육 목적이며 의학적 조언을 대체할 수 없습니다. 
-            자세한 내용은 <a href="disclaimer.html">면책조항</a>을 참고하세요.</p>
+            <p><strong>âš ï¸ ì˜ë£Œ ì •ë³´ ì•ˆë‚´:</strong> ë³¸ ì‚¬ì´íŠ¸ì˜ ì •ë³´ëŠ” êµìœ¡ ëª©ì ì´ë©° ì˜í•™ì  ì¡°ì–¸ì„ ëŒ€ì²´í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤. 
+            ìžì„¸í•œ ë‚´ìš©ì€ <a href="disclaimer.html">ë©´ì±…ì¡°í•­</a>ì„ ì°¸ê³ í•˜ì„¸ìš”.</p>
         </div>
-        <!-- 간결한 통계 (한 줄) -->
+        <!-- ê°„ê²°í•œ í†µê³„ (í•œ ì¤„) -->
         <div class="stats-inline">
             <div class="stat-item">
                 <span class="number">{len(news_list)}</span>
-                <span class="label">이 뉴스</span>
+                <span class="label">ì´ ë‰´ìŠ¤</span>
             </div>
 """
     
-    # 카테고리별 통계
+    # ì¹´í…Œê³ ë¦¬ë³„ í†µê³„
     category_counts = {}
     for news in news_list:
         cat = news['category']
@@ -468,7 +468,7 @@ def generate_html(news_list):
         <div class="grid">
 """
     
-    # 뉴스 카드 생성 (클릭 시 모달 열기)
+    # ë‰´ìŠ¤ ì¹´ë“œ ìƒì„± (í´ë¦­ ì‹œ ëª¨ë‹¬ ì—´ê¸°)
     for idx, news in enumerate(news_list):
         tag_class = category_tag_class.get(news['category'], "tag-research")
         
@@ -479,7 +479,7 @@ def generate_html(news_list):
                 <h3 class="title">{news['translated_title']}</h3>
                 <p class="summary">{news['short_summary']}</p>
                 <div class="meta">
-                    <span>📰 {news['source']}</span>
+                    <span>ðŸ“° {news['source']}</span>
                     <span>{news['date']}</span>
                 </div>
             </div>
@@ -489,16 +489,16 @@ def generate_html(news_list):
         </div>
         
         <div class="about">
-            <h3>🩺 LUMEN이란?</h3>
-            <p>바쁜 의료 현장을 위해 <strong>Gastroenterology & Endoscopy News, Medical Xpress, News-Medical</strong> 등 
-            해외 최신 내시경 뉴스를 AI(Google Gemini)가 매일 한국어로 브리핑합니다.</p>
+            <h3>ðŸ©º LUMENì´ëž€?</h3>
+            <p>ë°”ìœ ì˜ë£Œ í˜„ìž¥ì„ ìœ„í•´ <strong>Gastroenterology & Endoscopy News, Medical Xpress, News-Medical</strong> ë“± 
+            í•´ì™¸ ìµœì‹  ë‚´ì‹œê²½ ë‰´ìŠ¤ë¥¼ AI(Google Gemini)ê°€ ë§¤ì¼ í•œêµ­ì–´ë¡œ ë¸Œë¦¬í•‘í•©ë‹ˆë‹¤.</p>
         </div>
     </div>
     
-    <!-- 모달 팝업 -->
+    <!-- ëª¨ë‹¬ íŒì—… -->
 """
     
-    # 각 뉴스별 모달 생성
+    # ê° ë‰´ìŠ¤ë³„ ëª¨ë‹¬ ìƒì„±
     for idx, news in enumerate(news_list):
         tag_class = category_tag_class.get(news['category'], "tag-research")
         html += f"""
@@ -508,14 +508,14 @@ def generate_html(news_list):
             <span class="tag {tag_class}">{news['category']}</span>
             <h2 class="modal-title">{news['translated_title']}</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> {news['original_title']}
+                <strong>ì›ë¬¸ ì œëª©:</strong> {news['original_title']}
             </div>
             <p class="modal-summary">{news['long_summary']}</p>
             <div class="modal-meta">
-                <span>📰 {news['source']}</span>
+                <span>ðŸ“° {news['source']}</span>
                 <span>{news['date']}</span>
             </div>
-            <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="{news['url']}" target="_blank" rel="noopener noreferrer" class="btn">ì›ë¬¸ ë³´ê¸° â†’</a>
         </div>
     </div>
 """
@@ -523,14 +523,14 @@ def generate_html(news_list):
     html += """
     
     <footer>
-        <p>© 2024 <a href="index.html">LUMEN</a> | 
-        <a href="about.html">소개</a> | 
-        <a href="privacy.html">개인정보처리방침</a> | 
-        <a href="terms.html">이용약관</a> | 
-        <a href="disclaimer.html">면책조항</a> | 
-        <a href="contact.html">연락처</a></p>
+        <p>Â© 2024 <a href="index.html">LUMEN</a> | 
+        <a href="about.html">ì†Œê°œ</a> | 
+        <a href="privacy.html">ê°œì¸ì •ë³´ì²˜ë¦¬ë°©ì¹¨</a> | 
+        <a href="terms.html">ì´ìš©ì•½ê´€</a> | 
+        <a href="disclaimer.html">ë©´ì±…ì¡°í•­</a> | 
+        <a href="contact.html">ì—°ë½ì²˜</a></p>
         <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
-            AI 큐레이션 | 매일 오전 8시 업데이트 | 문의: lumenmedi@gmail.com
+            AI íë ˆì´ì…˜ | ë§¤ì¼ ì˜¤ì „ 8ì‹œ ì—…ë°ì´íŠ¸ | ë¬¸ì˜: lumenmedi@gmail.com
         </p>
     </footer>
     
@@ -559,30 +559,30 @@ def generate_html(news_list):
 
 
 # ============================================
-# 메인 실행
+# ë©”ì¸ ì‹¤í–‰
 # ============================================
 if __name__ == "__main__":
     print("\n" + "=" * 60)
-    print("🚀 LUMEN 시스템 시작 (네비게이션 + 면책 배너 포함)")
+    print("ðŸš€ LUMEN ì‹œìŠ¤í…œ ì‹œìž‘ (ë„¤ë¹„ê²Œì´ì…˜ + ë©´ì±… ë°°ë„ˆ í¬í•¨)")
     print("=" * 60)
     
     news_data = fetch_rss_feeds()
     
     if not news_data:
-        print("⚠️ 뉴스를 가져오지 못했습니다.")
+        print("âš ï¸ ë‰´ìŠ¤ë¥¼ ê°€ì ¸ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.")
         exit()
     
-    print("🔧 HTML 파일 생성 중...\n")
+    print("ðŸ”§ HTML íŒŒì¼ ìƒì„± ì¤‘...\n")
     final_html = generate_html(news_data)
     
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(final_html)
     
     print("=" * 60)
-    print("✅ 완료! index.html 파일을 브라우저로 열어보세요.")
+    print("âœ… ì™„ë£Œ! index.html íŒŒì¼ì„ ë¸Œë¼ìš°ì €ë¡œ ì—´ì–´ë³´ì„¸ìš”.")
     print("=" * 60)
-    print("\n💡 개선사항:")
-    print("  ✅ 네비게이션 메뉴 추가")
-    print("  ✅ 면책 배너 추가")
-    print("  ✅ 짧은 요약 표시")
-    print("  ✅ 원문 링크 제공")
+    print("\nðŸ’¡ ê°œì„ ì‚¬í•­:")
+    print("  âœ… ë„¤ë¹„ê²Œì´ì…˜ ë©”ë‰´ ì¶”ê°€")
+    print("  âœ… ë©´ì±… ë°°ë„ˆ ì¶”ê°€")
+    print("  âœ… ì§§ì€ ìš”ì•½ í‘œì‹œ")
+    print("  âœ… ì›ë¬¸ ë§í¬ ì œê³µ")
