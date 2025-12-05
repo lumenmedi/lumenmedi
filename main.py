@@ -7,7 +7,7 @@ LUMEN - 의학 정보 큐레이션 사이트 (네비게이션 + 면책 배너 �
 import os
 from dotenv import load_dotenv
 import feedparser
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import time
 import requests
 import json
@@ -272,7 +272,9 @@ def fetch_rss_feeds():
 # HTML 생성 (팝업 모달 포함)
 # ============================================
 def generate_html(news_list):
-    current_date = datetime.now().strftime("%Y년 %m월 %d일")
+    # 한국 시간대 (UTC+9) 설정
+    kst = timezone(timedelta(hours=9))
+    current_date = datetime.now(kst).strftime("%Y년 %m월 %d일")  # ← KST 시간
     
     # 카테고리별 색상
     category_tag_class = {
