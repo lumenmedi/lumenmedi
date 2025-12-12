@@ -3,100 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="해외 최신 내시경 의학 뉴스를 AI가 매일 한국어로 큐레이션합니다">
-    <meta name="keywords" content="내시경,의학,뉴스,소화기내과,gastroenterology,endoscopy">
-    <title>LUMEN - 내시경 뉴스</title>
+    <title>✨ LUMEN - AI 의학 뉴스 큐레이션</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; line-height: 1.6; }
         
         /* 헤더 */
-        header { background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .update { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }
+        header { background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; text-align: center; padding: 2rem 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        header .update { font-size: 0.95rem; opacity: 0.9; }
         
         /* 네비게이션 */
-        nav {
-            background: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        nav a {
-            color: #003366;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        nav a:hover { color: #FFD700; }
+        nav { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; padding: 1rem; gap: 1.5rem; }
+        nav ul li a { text-decoration: none; color: #003366; font-weight: 500; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.3s; }
+        nav ul li a:hover { background: #003366; color: white; }
         
         /* 컨테이너 */
-        .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         
         /* 면책 배너 */
-        .disclaimer-banner {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
-            border-left: 5px solid #ffc107;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(255,193,7,0.2);
-        }
-        .disclaimer-banner p {
-            color: #856404;
-            font-size: 0.9rem;
-            margin: 0;
-            line-height: 1.6;
-        }
-        .disclaimer-banner strong {
-            color: #d9534f;
-            font-weight: 600;
-        }
-        .disclaimer-banner a {
-            color: #003366;
-            text-decoration: underline;
-            font-weight: 500;
-        }
+        .disclaimer-banner { background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; }
+        .disclaimer-banner p { color: #856404; font-size: 0.95rem; }
+        .disclaimer-banner a { color: #003366; font-weight: 600; text-decoration: underline; }
         
-        /* 간결한 통계 */
-        .stats-inline { background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .stat-item { display: flex; align-items: center; gap: 0.5rem; }
-        .stat-item .number { font-size: 1.5rem; font-weight: bold; color: #003366; }
-        .stat-item .label { font-size: 0.85rem; color: #666; }
+        /* 통계 (한 줄) */
+        .stats-inline { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .stat-item { background: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+        .stat-item .number { display: block; font-size: 2rem; font-weight: 700; color: #003366; }
+        .stat-item .label { display: block; font-size: 0.9rem; color: #666; margin-top: 0.25rem; }
         
-        /* 뉴스 그리드 */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: all 0.3s; cursor: pointer; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+        /* 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
         
-        /* 카테고리 태그 */
-        .tag { display: inline-block; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem; }
-        .tag-tech { background: #4A90E2; }
-        .tag-regulation { background: #E74C3C; }
-        .tag-research { background: #2ECC71; }
-        .tag-safety { background: #F39C12; }
-        .tag-education { background: #9B59B6; }
-        
-        /* 출처 뱃지 */
-        .source-badge { display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; }
-        
-        /* 제목 */
-        .title { font-size: 1.3rem; font-weight: bold; color: #003366; margin-bottom: 1rem; line-height: 1.4; }
-        
-        /* 요약 */
-        .summary { font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }
-        
-        /* 메타 */
-        .meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; flex-wrap: wrap; gap: 0.5rem; }
+        /* 카드 */
+        .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; position: relative; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .tag { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .tag-tech { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tag-regulation { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .tag-research { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .tag-safety { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .tag-education { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .source-badge { position: absolute; top: 1rem; right: 1rem; background: #FFD700; color: #003366; padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+        .title { font-size: 1.2rem; font-weight: 700; color: #003366; margin-bottom: 0.75rem; line-height: 1.4; }
+        .summary { color: #666; font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.6; }
+        .meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: #999; }
         
         /* 모달 (팝업) */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
@@ -133,7 +85,7 @@
 <body>
     <header>
         <h1>✨ LUMEN</h1>
-        <p class="update">📅 2025년 12월 12일 07:53</p>
+        <p class="update">📅 2025년 12월 12일</p>
     </header>
     
     <nav>
@@ -156,18 +108,18 @@
         <!-- 간결한 통계 (한 줄) -->
         <div class="stats-inline">
             <div class="stat-item">
-                <span class="number">18</span>
-                <span class="label">이 뉴스</span>
+                <span class="number">10</span>
+                <span class="label">개 뉴스</span>
             </div>
 
             <div class="stat-item">
-                <span class="number">17</span>
+                <span class="number">9</span>
                 <span class="label">연구/임상</span>
             </div>
 
             <div class="stat-item">
                 <span class="number">1</span>
-                <span class="label"></span>
+                <span class="label">기술/혁신</span>
             </div>
 
         </div>
@@ -176,206 +128,111 @@
 
             <div class="card" onclick="openModal(0)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">UT, 위암 연관 숨은 감염 진단·</h3>
-                <p class="summary">제목: UT, 위암 연관 숨은 감염 진단·</p>
+                <span class="source-badge">TOP 2</span>
+                <h3 class="title">간암 예방 및 치료 노력 효과 있어</h3>
+                <p class="summary">간암 예방 및 치료를 위한 다양한 노력들이 효과를 보이고 있다는 연구 결과가 나왔습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Endoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 Medical Xpress - Gastroenterology</span>
+                    <span>2025-12-08</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(1)">
-                <span class="tag tag-research"></span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">EoE 치료 변경 내시경 준비</h3>
-                <p class="summary">제목: EoE 치료 변경 내시경 준비
-카테고리:</p>
+                <span class="tag tag-research">연구/임상</span>
+                <span class="source-badge">TOP 2</span>
+                <h3 class="title">참전 용사, 정신 건강 문제 시 간암 위험 증가</h3>
+                <p class="summary">연구 결과, 정신 건강 문제가 있는 참전 용사에게서 C형 간염 증가로 인한 간암 발병 위험이 높아지는 것으로 나타났습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Endoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 Medical Xpress - Gastroenterology</span>
+                    <span>2025-12-04</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(2)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">메모리얼 내시경 센터 케이티 이전</h3>
-                <p class="summary">제목: 메모리얼 내시경 센터 케이티 이전
-카테</p>
+                <span class="source-badge">TOP 2</span>
+                <h3 class="title">호산구성 식도염 점막 치유 치료 표적 발견</h3>
+                <p class="summary">호산구성 식도염 환자의 점막 치유를 위한 새로운 치료 표적이 발견되어 치료법 개발에 기여할 것으로 기대됩니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Endoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 Medical Xpress - Gastroenterology</span>
+                    <span>2025-12-03</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(3)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">소화기내과 의사 보수 보고</h3>
-                <p class="summary">제목: 소화기내과 의사 보수 보고</p>
+                <span class="source-badge">TOP 2</span>
+                <h3 class="title">진행성 담도암 2차 치료 가능성 제시</h3>
+                <p class="summary">진행성 담도암 환자를 위한 새로운 2차 치료 옵션이 발견될 가능성이 제기되었습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Gastroenterology</span>
-                    <span>2025-12-11</span>
+                    <span>📰 Medical Xpress - Gastroenterology</span>
+                    <span>2025-11-29</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(4)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">상부 내시경 후 급성 췌장염 발생 사례</h3>
-                <p class="summary">제목: 상부 내시경 후 급성 췌장염 발생 사례</p>
+                <span class="source-badge">TOP 2</span>
+                <h3 class="title">크론병, 해조류로 치료 가능할까?</h3>
+                <p class="summary">해조류가 크론병 환자의 장을 치유하는 데 효과가 있는지에 대한 연구가 진행 중입니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Gastroenterology</span>
-                    <span>2025-12-11</span>
+                    <span>📰 Medical Xpress - Gastroenterology</span>
+                    <span>2025-11-26</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(5)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">AI-인간 혼합 채점, 궤</h3>
-                <p class="summary">제목: AI-인간 혼합 채점, 궤</p>
+                <span class="source-badge">TOP 3</span>
+                <h3 class="title">방사성 요오드 치료 불응 갑상선암, 새로운 표적 치료법 효과 기대</h3>
+                <p class="summary">방사성 요오드 치료에 반응하지 않는 갑상선암 환자를 위한 새로운 표적 알파 치료법이 긍정적인 결과를 보여주고 있습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Gastroenterology</span>
-                    <span>2025-12-11</span>
+                    <span>📰 News-Medical - Gastroenterology</span>
+                    <span>2025-12-06</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(6)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">대장암 혈액 선별검사 도입</h3>
-                <p class="summary">제목: 대장암 혈액 선별검사 도입
-카테</p>
+                <span class="source-badge">TOP 3</span>
+                <h3 class="title">아시아 IBD 환자, PSC 발병률 낮고 임상 결과 양호</h3>
+                <p class="summary">아시아 염증성 장 질환(IBD) 환자들이 원발성 경화성 담관염(PSC) 발병률이 낮고 임상 경과가 더 좋다는 연구 결과가 나왔습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Colonoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 News-Medical - Gastroenterology</span>
+                    <span>2025-12-02</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(7)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">CDC, 펜실베이니아 대장암 검진</h3>
-                <p class="summary">제목: CDC, 펜실베이니아 대장암 검진</p>
+                <span class="source-badge">TOP 3</span>
+                <h3 class="title">FOLFIRINOX, 진행성 담도암 2차 치료 효과 기대</h3>
+                <p class="summary">FOLFIRINOX 요법이 진행성 담도암 환자의 2차 치료 옵션으로 유망한 결과를 보였습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Colonoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 News-Medical - Gastroenterology</span>
+                    <span>2025-11-27</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(8)">
                 <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐</span>
-                <h3 class="title">AI 활용 대장암 검진 증진</h3>
-                <p class="summary">제목: AI 활용 대장암 검진 증진
-카테</p>
+                <span class="source-badge">TOP 3</span>
+                <h3 class="title">소아 간 이식 후 예후 이해 돕는 새로운 방법 발견</h3>
+                <p class="summary">연구진이 소아 간 이식 후 환자들의 경과를 더 잘 이해할 수 있는 새로운 방법을 제시했습니다.</p>
                 <div class="meta">
-                    <span>📰 Google News - Colonoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 News-Medical - Gastroenterology</span>
+                    <span>2025-11-25</span>
                 </div>
             </div>
 
             <div class="card" onclick="openModal(9)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">Fighting Crohn's with algae—can it heal the gut?</h3>
-                <p class="summary">저는 10년 차 소화기내과 간호사</p>
+                <span class="tag tag-tech">기술/혁신</span>
+                <span class="source-badge">TOP 3</span>
+                <h3 class="title">전문가, 디지털 허브 통해 대장암 예방 및 관리 혁신 시도</h3>
+                <p class="summary">대장암 예방과 관리를 개선하기 위해 전문가들이 디지털 플랫폼을 구축했습니다. 이 플랫폼은 환자 중심의 맞춤형 케어를 제공할 것으로 기대됩니다.</p>
                 <div class="meta">
-                    <span>📰 Medical Xpress - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(10)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">식도암 예방 개념 증명 연구</h3>
-                <p class="summary">제목: 식도암 예방 개념 증명 연구
-카</p>
-                <div class="meta">
-                    <span>📰 Medical Xpress - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(11)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">젊은층 위암 증가세?</h3>
-                <p class="summary">제목: 젊은층 위암 증가세?
-카테고</p>
-                <div class="meta">
-                    <span>📰 Medical Xpress - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(12)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">심부 폐종양 내시경 접근 신기술</h3>
-                <p class="summary">제목: 심부 폐종양 내시경 접근 신기술</p>
-                <div class="meta">
-                    <span>📰 Medical Xpress - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(13)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">초가공식품, 조기 대장암 전구</h3>
-                <p class="summary">제목: 초가공식품, 조기 대장암 전구</p>
-                <div class="meta">
-                    <span>📰 Medical Xpress - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(14)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">** 대장암 예방·관리 디지털 허브 출범</h3>
-                <p class="summary">**제목:** 대장암 예방·관리 디지털 허브 출범</p>
-                <div class="meta">
-                    <span>📰 News-Medical - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(15)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">경미한 췌관 확장, 암 위험 증가</h3>
-                <p class="summary">제목: 경미한 췌관 확장, 암 위험 증가</p>
-                <div class="meta">
-                    <span>📰 News-Medical - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(16)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">장간막 허혈 진단 캡슐 개발</h3>
-                <p class="summary">제목: 장간막 허혈 진단 캡슐 개발
-카테</p>
-                <div class="meta">
-                    <span>📰 News-Medical - Endoscopy</span>
-                    <span>2025-12-11</span>
-                </div>
-            </div>
-
-            <div class="card" onclick="openModal(17)">
-                <span class="tag tag-research">연구/임상</span>
-                <span class="source-badge">⭐⭐⭐⭐</span>
-                <h3 class="title">AI 학습, 자궁경부암 예방 촉진</h3>
-                <p class="summary">제목: AI 학습, 자궁경부암 예방 촉진</p>
-                <div class="meta">
-                    <span>📰 News-Medical - Endoscopy</span>
-                    <span>2025-12-11</span>
+                    <span>📰 News-Medical - Gastroenterology</span>
+                    <span>2025-11-22</span>
                 </div>
             </div>
 
@@ -394,34 +251,33 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(0)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">UT, 위암 연관 숨은 감염 진단·</h2>
+            <h2 class="modal-title">간암 예방 및 치료 노력 효과 있어</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> UT San Antonio advances detection, prevention of hidden stomach infections linked to cancer - UT Health San Antonio
+                <strong>원문 제목:</strong> Liver cancer prevention, treatment efforts are working
             </div>
-            <p class="modal-summary">제목: UT, 위암 연관 숨은 감염 진단·</p>
+            <p class="modal-summary">최근 발표된 연구에 따르면, 간암 예방을 위한 백신 접종, 조기 진단 프로그램, 그리고 치료법 개발 등이 긍정적인 결과를 나타내고 있습니다. 특히, 새로운 표적 치료제와 면역 항암제의 등장은 간암 환자의 생존율을 향상시키는 데 기여하고 있습니다. 전문가들은 지속적인 연구와 투자를 통해 간암 치료 성과를 더욱 높여야 한다고 강조합니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Endoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 Medical Xpress - Gastroenterology</span>
+                <span>2025-12-08</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMitwFBVV95cUxPaGtlUWVxeDhkNDlQR2hiTzZOMHktZS1wdkl4VGJQZ2ZNQlpQUG5zcTFqWGJabURnZW1vWnpTel9PMF93TTIxNGQ5TmtDdUdmZzRRMHBIaFo2SnRHaVlmQ3ZWRFZMT203eW5GUW96S3JWLWpmNVRQb1pxV3k0RUVIT0NzV0FmRldMamo0c010LXRlRXBuNGRTcmIyUTBWSk05NFUtUlZPX19sMlE2Ny1XcTN1aGVONFk?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://medicalxpress.com/news/2025-12-liver-cancer-treatment-efforts.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
     <div id="modal1" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal(1)">&times;</span>
-            <span class="tag tag-research"></span>
-            <h2 class="modal-title">EoE 치료 변경 내시경 준비</h2>
+            <span class="tag tag-research">연구/임상</span>
+            <h2 class="modal-title">참전 용사, 정신 건강 문제 시 간암 위험 증가</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> How to Prepare for an Eosinophilic Esophagitis (EoE) Endoscopy When Switching Treatments - Everyday Health
+                <strong>원문 제목:</strong> Mental health conditions may heighten liver cancer risk in veterans due to increased hepatitis C, study finds
             </div>
-            <p class="modal-summary">제목: EoE 치료 변경 내시경 준비
-카테고리:</p>
+            <p class="modal-summary">미국 참전 용사들을 대상으로 한 연구에서, 정신 건강 질환을 겪는 참전 용사들이 C형 간염 감염률이 높고, 이로 인해 간암 발병 위험이 증가하는 것으로 밝혀졌습니다. 이는 외상 후 스트레스 장애(PTSD)와 같은 정신 질환이 면역 체계를 약화시키고, C형 간염 바이러스의 활성화를 촉진하기 때문으로 분석됩니다. 연구진은 참전 용사들의 정신 건강 관리와 C형 간염 검진의 중요성을 강조했습니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Endoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 Medical Xpress - Gastroenterology</span>
+                <span>2025-12-04</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMiqAFBVV95cUxNRnUwZkwyY1FDVFUtSGlWV1dMXzlkbFBLUVExNXRfYUg4Yk84Zk14SXJGdHBJdWI2UU5NZ1hEUFRNeEx6cFo1UDBWelg3Z2N4ZE9VWXJMQU43cUdGUkNwdDE3YXZ4akpMLU51ckxUX3U4Y1BmUkQ0dEM4N2Fnay11bEZNbUVRT1laRVU4MmozbG54ZmROUkN4V2ItblNVaGxCWGotRkEzMmw?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://medicalxpress.com/news/2025-12-mental-health-conditions-heighten-liver.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -429,17 +285,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(2)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">메모리얼 내시경 센터 케이티 이전</h2>
+            <h2 class="modal-title">호산구성 식도염 점막 치유 치료 표적 발견</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> Memorial Endoscopy Center relocates to Katy - Community Impact | News
+                <strong>원문 제목:</strong> Potential therapeutic target for mucosal healing in eosinophilic esophagitis
             </div>
-            <p class="modal-summary">제목: 메모리얼 내시경 센터 케이티 이전
-카테</p>
+            <p class="modal-summary">연구는 호산구성 식도염 환자에서 점막 치유를 촉진할 수 있는 특정 분자를 잠재적 치료 표적으로 제시했습니다. 이 발견은 호산구성 식도염의 새로운 치료 전략 개발에 중요한 단서를 제공하며, 환자들의 삶의 질을 향상시킬 수 있는 가능성을 열었습니다. 추가 연구를 통해 해당 표적을 활용한 효과적인 치료법 개발이 이루어질 것으로 예상됩니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Endoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 Medical Xpress - Gastroenterology</span>
+                <span>2025-12-03</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxQZVNQNVJ1ZmxVM3FKa0Z2d1RNNk1NVGZyLUpCYmJsUko5MlBaNmwxeXdRRzljdzFUa1BudlpQbzROeUQzRFotQ1lxaGdnMkJ0ZnhMdFZUcy1RSFlYMHQ0dU1waUNLcXFpQ3d1WlprVnEwY1lUcGZzQlRPR3NIaHVqcHhhaDJjcFFOcDRvME55UHB5NE04N1BUNU12OHJrWk9VZUxUZGlEMmp6aW5QVjk2QWoyZTBjdURX?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://medicalxpress.com/news/2025-12-potential-therapeutic-mucosal-eosinophilic-esophagitis.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -447,16 +302,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(3)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">소화기내과 의사 보수 보고</h2>
+            <h2 class="modal-title">진행성 담도암 2차 치료 가능성 제시</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> Gastroenterology Physician Compensation Report - Gastroenterology & Endoscopy News
+                <strong>원문 제목:</strong> Potential new second-line option for advanced biliary tract cancer identified
             </div>
-            <p class="modal-summary">제목: 소화기내과 의사 보수 보고</p>
+            <p class="modal-summary">새로운 연구를 통해 진행성 담도암 치료에 사용될 수 있는 새로운 약물이나 치료법이 확인될 가능성이 있습니다. 이는 기존 치료법에 반응하지 않는 환자들에게 새로운 희망을 제시할 수 있습니다. 추가 연구를 통해 이 가능성을 검증하고 임상 적용 가능성을 평가해야 합니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Gastroenterology</span>
-                <span>2025-12-11</span>
+                <span>📰 Medical Xpress - Gastroenterology</span>
+                <span>2025-11-29</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxNZmlhOFpEc0tDdjdzU3YyZ21PZHVXb09GbGdsNUNXcFVzSUFXSWlvT0hZaVRYZnRvLWxuY0RNLWlUV2t1RGNGb2xna1dUaGRNTWlKeDJ6ZkVjbnVrdk5tZ1VxZ0wtTFM3aGtVdml4NnRxb3owTlR6UEtPWjF5SWwyTm56R084cVc2Xy1PeF85cUxIam5GX2tyd1RKT3dSX1M0NzJVYjdqWlZnRWtTWXEzYVd0LWdGSW9maXc?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://medicalxpress.com/news/2025-11-potential-line-option-advanced-biliary.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -464,16 +319,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(4)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">상부 내시경 후 급성 췌장염 발생 사례</h2>
+            <h2 class="modal-title">크론병, 해조류로 치료 가능할까?</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> A Case of Acute Pancreatitis Developing After Upper Gastrointestinal Endoscopy: A Rare Post-Procedural Complication - Cureus
+                <strong>원문 제목:</strong> Fighting Crohn's with algae—can it heal the gut?
             </div>
-            <p class="modal-summary">제목: 상부 내시경 후 급성 췌장염 발생 사례</p>
+            <p class="modal-summary">연구진은 해조류의 특정 성분이 염증을 줄이고 장내 환경을 개선하여 크론병 증상을 완화할 수 있는지 탐구하고 있습니다. 만약 효과가 입증된다면, 해조류는 크론병 치료의 새로운 대안이 될 수 있습니다. 현재 임상 시험을 통해 안전성과 효능을 평가하고 있습니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Gastroenterology</span>
-                <span>2025-12-11</span>
+                <span>📰 Medical Xpress - Gastroenterology</span>
+                <span>2025-11-26</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMiggJBVV95cUxNazhiR2VGWU9BWUNfcGdiekNwemVtTDRlNnRIMFltdEp2QVJCNXZYZjBfdjhuRGw2bnBiY0h5cHZZRWxFaFB0S3ptMjBySGc2X0J3NlFTaEVIQ2NDOTRUZEJGVDhBd0NMaHNvZkJkdll2SVFlU181a2F4NlNrbDBmeUQ3NnJZQnBHYkh0U3VUT2syclBzcl9XQS1SWHAxcGZjM25VOURmdC1uR1dRSE10VnBWa1R5dXZRWHFjS0NoZkl1bjF3SFdwZUxPR3htTmc0a0lRN2FRWVV0MWlsRXN0Rmh4alA5MFY0SEFUOFp1VXgzMU5abVotNTQ1Y3pndFdxM1E?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://medicalxpress.com/news/2025-11-crohn-algae-gut.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -481,16 +336,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(5)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">AI-인간 혼합 채점, 궤</h2>
+            <h2 class="modal-title">방사성 요오드 치료 불응 갑상선암, 새로운 표적 치료법 효과 기대</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> Hybrid AI-Human Scoring System Matches Expert Readers in Ulcerative Colitis Trials - European Medical Journal
+                <strong>원문 제목:</strong> New targeted alpha therapy shows promise for patients with radioiodine-refractory thyroid cancer
             </div>
-            <p class="modal-summary">제목: AI-인간 혼합 채점, 궤</p>
+            <p class="modal-summary">새로운 표적 알파 치료법이 방사성 요오드 치료에 내성이 있는 갑상선암 환자들에게 유망한 치료 효과를 보였습니다. 초기 임상 연구 결과, 종양 축소 및 생존 기간 연장 등의 긍정적인 지표가 확인되었습니다. 이 치료법은 암세포에 특이적으로 작용하여 부작용을 최소화하는 장점을 가지고 있습니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Gastroenterology</span>
-                <span>2025-12-11</span>
+                <span>📰 News-Medical - Gastroenterology</span>
+                <span>2025-12-06</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMizAFBVV95cUxNbjJLQ0k3bjk2Q1lEVG1MbXNWRDZrbWdjeTJESTRwLTdndnlRN2NSUXlJYVIzdkotTnBvenJsRjN6MWVvUTZRUTFtU3hHRzVtSW1nUld3bUFCN0Fpc3pxZkxWRjhjTUxiMkRTN3RsVEdmSld1cHJ1ZldKVmNOMTRaSDlucm03SGsxVFB3cW9DdUdqaGtSU19QRDBzX0hiT3pnclo3WXlrXy1tZ0k0Ri1zN2ZQWUtHdGVrV1cxV3puZzRCOV9XSnV6dzBQWlg?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://www.news-medical.net/news/20251205/New-targeted-alpha-therapy-shows-promise-for-patients-radioiodine-refractory-thyroid-cancer.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -498,17 +353,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(6)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">대장암 혈액 선별검사 도입</h2>
+            <h2 class="modal-title">아시아 IBD 환자, PSC 발병률 낮고 임상 결과 양호</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> Blood tests for colorectal cancer screening have arrived - Drug Discovery News
+                <strong>원문 제목:</strong> Asian IBD patients show lower PSC prevalence and better clinical outcomes
             </div>
-            <p class="modal-summary">제목: 대장암 혈액 선별검사 도입
-카테</p>
+            <p class="modal-summary">연구에 따르면, 아시아 IBD 환자들은 서구 환자에 비해 PSC 발병 빈도가 낮으며, PSC가 발생하더라도 임상 결과가 더 긍정적인 경향을 보였습니다. 이는 유전적 요인, 환경적 요인, 그리고 치료 전략의 차이 때문일 수 있습니다. 해당 연구는 아시아 IBD 환자 관리에 대한 새로운 시사점을 제시합니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Colonoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 News-Medical - Gastroenterology</span>
+                <span>2025-12-02</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMinAFBVV95cUxPdTBIRzJGNml3c3FWeDNWaFIyMzh0XzVpWmhvWWx3VGpwcGZ3MUZXblFTTUx2WnpyeXZCc05oY2JrX01TWkRraFlBc2Z5NVBHMWNYN1VwcmZVdERVTWh4YUdMVy1iM21IcW9KUjh6bFNqTWRQR1R0TjJXU3B2amw1eTdHTXRwWllvNzIxT21nSmRmZGdab25PbXNhWkY?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://www.news-medical.net/news/20251202/Asian-IBD-patients-show-lower-PSC-prevalence-and-better-clinical-outcomes.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -516,16 +370,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(7)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">CDC, 펜실베이니아 대장암 검진</h2>
+            <h2 class="modal-title">FOLFIRINOX, 진행성 담도암 2차 치료 효과 기대</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> $4.2M CDC grant to increase colorectal cancer screening in Pennsylvania - Penn State Health News
+                <strong>원문 제목:</strong> FOLFIRINOX shows promise as a second-line option for advanced biliary tract cancer
             </div>
-            <p class="modal-summary">제목: CDC, 펜실베이니아 대장암 검진</p>
+            <p class="modal-summary">연구 결과, FOLFIRINOX는 기존 치료에 실패한 진행성 담도암 환자에게 효과적인 2차 치료 옵션이 될 수 있음을 시사했습니다. 이 치료법은 생존 기간 연장 및 질병 진행 억제에 긍정적인 영향을 미치는 것으로 나타났습니다. 추가적인 연구를 통해 FOLFIRINOX의 효능과 안전성을 더욱 면밀히 검토할 필요가 있습니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Colonoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 News-Medical - Gastroenterology</span>
+                <span>2025-11-27</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMisAFBVV95cUxNVVFINTJucXltSlJYRGZaZjNPbUFWS0xaVzNfangyaHFaeUJxQ0ZKT29HUEpsS3B0SUhkV2xWaTVhLW1GeEZUSmpLN0FyOUNkMXRGUFczM2xkcXZHZ3FXRWNaSUg2bmhnRkNBeFhSZDJ1a3FrRTE3RTJ1U2JqLWd3ai1saFFXZENjQUJGZ2htZjlWWnc4ejhaNWI0eVhYYkNsT0cyZkJPcm9WZ3kzUjZhUA?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://www.news-medical.net/news/20251127/FOLFIRINOX-shows-promise-as-a-second-line-option-for-advanced-biliary-tract-cancer.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
@@ -533,173 +387,33 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(8)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">AI 활용 대장암 검진 증진</h2>
+            <h2 class="modal-title">소아 간 이식 후 예후 이해 돕는 새로운 방법 발견</h2>
             <div class="modal-original-title">
-                <strong>원문 제목:</strong> Using AI outreach to raise bowel cancer screening in rural Queensland - MobiHealthNews
+                <strong>원문 제목:</strong> Researchers uncover a new way to understand how children fare after liver transplantation
             </div>
-            <p class="modal-summary">제목: AI 활용 대장암 검진 증진
-카테</p>
+            <p class="modal-summary">이 연구는 소아 간 이식 환자의 예후를 예측하고 관리하는 데 도움을 줄 수 있는 새로운 접근 방식을 제시했습니다. 연구팀은 이식 후 환자의 회복 과정을 추적하고, 합병증 발생 위험을 조기에 파악할 수 있는 방법을 개발했습니다. 이를 통해 환자 맞춤형 치료 계획을 수립하고, 생존율을 향상시킬 수 있을 것으로 기대됩니다.</p>
             <div class="modal-meta">
-                <span>📰 Google News - Colonoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 News-Medical - Gastroenterology</span>
+                <span>2025-11-25</span>
             </div>
-            <a href="https://news.google.com/rss/articles/CBMipgFBVV95cUxNV3NxZXhZbFphZlpyZnJNWEpldmVhZHpaUUJVRGVMN1R0djhaalRKaUFZVDBaU1JnZThUT2N6X2FDTFRoWS0zRzNzQ2VjQURkNXlPY0VtaXljXzIwWEF0MmtIbjBENGhRQ0stWHdtUTZldlBnV3NlTExNWXl2Y3ZZczJtUkU5bVg3ejltMXZkcFpQUS1SbEVwdG1TcXVqUXNROUpaOEJR?oc=5" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
+            <a href="https://www.news-medical.net/news/20251124/Researchers-uncover-a-new-way-to-understand-how-children-fare-after-liver-transplantation.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 
     <div id="modal9" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal(9)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">Fighting Crohn's with algae—can it heal the gut?</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Fighting Crohn's with algae—can it heal the gut?
-            </div>
-            <p class="modal-summary">저는 10년 차 소화기내과 간호사</p>
-            <div class="modal-meta">
-                <span>📰 Medical Xpress - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://medicalxpress.com/news/2025-11-crohn-algae-gut.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal10" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(10)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">식도암 예방 개념 증명 연구</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Study demonstrates proof of concept for preventing esophageal cancer
-            </div>
-            <p class="modal-summary">제목: 식도암 예방 개념 증명 연구
-카</p>
-            <div class="modal-meta">
-                <span>📰 Medical Xpress - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://medicalxpress.com/news/2025-11-proof-concept-esophageal-cancer.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal11" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(11)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">젊은층 위암 증가세?</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Is stomach cancer on the rise in young adults?
-            </div>
-            <p class="modal-summary">제목: 젊은층 위암 증가세?
-카테고</p>
-            <div class="modal-meta">
-                <span>📰 Medical Xpress - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://medicalxpress.com/news/2025-11-stomach-cancer-young-adults.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal12" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(12)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">심부 폐종양 내시경 접근 신기술</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Reaching the unreachable: Endoscopy technique opens route to deep lung tumors
-            </div>
-            <p class="modal-summary">제목: 심부 폐종양 내시경 접근 신기술</p>
-            <div class="modal-meta">
-                <span>📰 Medical Xpress - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://medicalxpress.com/news/2025-11-unreachable-endoscopy-technique-route-deep.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal13" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(13)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">초가공식품, 조기 대장암 전구</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Ultra-processed foods tied to higher rates of early-onset colorectal cancer precursors in adults
-            </div>
-            <p class="modal-summary">제목: 초가공식품, 조기 대장암 전구</p>
-            <div class="modal-meta">
-                <span>📰 Medical Xpress - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://medicalxpress.com/news/2025-11-ultra-foods-higher-early-onset.html" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal14" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(14)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">** 대장암 예방·관리 디지털 허브 출범</h2>
+            <span class="tag tag-tech">기술/혁신</span>
+            <h2 class="modal-title">전문가, 디지털 허브 통해 대장암 예방 및 관리 혁신 시도</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Experts launch digital hub to transform bowel cancer prevention and care
             </div>
-            <p class="modal-summary">**제목:** 대장암 예방·관리 디지털 허브 출범</p>
+            <p class="modal-summary">여러 분야의 전문가들이 협력하여 대장암 예방과 치료를 위한 디지털 허브를 개발했습니다. 이 허브는 최신 기술을 활용하여 조기 진단, 맞춤형 치료 계획 수립, 환자 교육 등을 제공할 예정입니다. 궁극적으로 대장암 생존율을 높이고 삶의 질을 향상시키는 것을 목표로 합니다.</p>
             <div class="modal-meta">
-                <span>📰 News-Medical - Endoscopy</span>
-                <span>2025-12-11</span>
+                <span>📰 News-Medical - Gastroenterology</span>
+                <span>2025-11-22</span>
             </div>
             <a href="https://www.news-medical.net/news/20251122/Experts-launch-digital-hub-to-transform-bowel-cancer-prevention-and-care.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal15" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(15)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">경미한 췌관 확장, 암 위험 증가</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Johns Hopkins study links mild pancreatic duct dilatation to higher cancer risk
-            </div>
-            <p class="modal-summary">제목: 경미한 췌관 확장, 암 위험 증가</p>
-            <div class="modal-meta">
-                <span>📰 News-Medical - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://www.news-medical.net/news/20251114/Johns-Hopkins-study-links-mild-pancreatic-duct-dilatation-to-higher-cancer-risk.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal16" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(16)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">장간막 허혈 진단 캡슐 개발</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Ingestible capsule developed for the diagnosis of acute mesenteric ischemia
-            </div>
-            <p class="modal-summary">제목: 장간막 허혈 진단 캡슐 개발
-카테</p>
-            <div class="modal-meta">
-                <span>📰 News-Medical - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://www.news-medical.net/news/20251022/Ingestible-capsule-developed-for-the-diagnosis-of-acute-mesenteric-ischemia.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
-        </div>
-    </div>
-
-    <div id="modal17" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal(17)">&times;</span>
-            <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">AI 학습, 자궁경부암 예방 촉진</h2>
-            <div class="modal-original-title">
-                <strong>원문 제목:</strong> Intelligent learning can accelerate global efforts to prevent cervical cancer
-            </div>
-            <p class="modal-summary">제목: AI 학습, 자궁경부암 예방 촉진</p>
-            <div class="modal-meta">
-                <span>📰 News-Medical - Endoscopy</span>
-                <span>2025-12-11</span>
-            </div>
-            <a href="https://www.news-medical.net/news/20251022/Intelligent-learning-can-accelerate-global-efforts-to-prevent-cervical-cancer.aspx" target="_blank" rel="noopener noreferrer" class="btn">원문 보기 →</a>
         </div>
     </div>
 

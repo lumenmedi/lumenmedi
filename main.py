@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LUMEN - 의학 정보 큐레이션 사이트 (네비게이션 + 면책 배너 포함)
+LUMEN - 의학 정보 큐레이션 사이트 (보안 강화 버전)
 """
 
 import os
@@ -11,6 +11,22 @@ from datetime import datetime, timezone, timedelta
 import time
 import requests
 import json
+import re
+import logging
+from typing import Dict, List, Tuple, Optional
+
+# =========================================================
+# 로깅 설정
+# =========================================================
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('lumen.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # =========================================================
 # 설정
@@ -19,25 +35,49 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
-    print("⚠️ API 키가 없습니다!")
-    exit()
+    logger.error("❌ GEMINI_API_KEY가 .env 파일에 설정되지 않았습니다.")
+    exit(1)
 
-print(f"🔑 API 키 로드 성공: {GEMINI_API_KEY[:5]}...")
+# API 키 검증만 수행 (로깅하지 않음)
+logger.info("🔑 API 키가 성공적으로 로드되었습니다.")
 
 # =========================================================
-# Gemini 2.0 Flash로 제목 번역 + 짧은/긴 요약 + 카테고리 분류
+# RSS 피드 설정
 # =========================================================
-def get_ai_summary_and_category(title):
+RSS_FEEDS = {
+    "Gastroenterology & Endoscopy News": "https://www.gastroendonews.com/rss",
+    "Medical Xpress - Gastroenterology": "https://medicalxpress.com/rss-feed/search/?search=gastroenterology",
+    "News-Medical - Gastroenterology": "https://www.news-medical.net/tag/feed/Gastroenterology.aspx",
+    "Healio - Gastroenterology": "https://www.healio.com/rss/gastroenterology.xml",
+    "Medscape - Gastroenterology": "https://www.medscape.com/rss/gastroenterology",
+    "American College of Gastroenterology": "https://gi.org/news/feed/"
+}
+
+CATEGORY_TAG_CLASS = {
+    "기술/혁신": "tag-tech",
+    "규제/가이드라인": "tag-regulation",
+    "연구/임상": "tag-research",
+    "안전/품질": "tag-safety",
+    "교육/훈련": "tag-education"
+}
+
+# =========================================================
+# Gemini API 호출 (보안 강화)
+# =========================================================
+def get_ai_summary_and_category(title: str, max_retries: int = 2) -> Tuple[str, str, str, str]:
     """
-    뉴스 제목을 보고:
-    1. 한국어 제목 번역
-    2. 짧은 요약 (1-2줄)
-    3. 긴 요약 (3-4줄)
-    4. 카테고리 자동 분류
-    """
-    print(f"    🤖 AI 번역 및 요약 중...")
+    뉴스 제목을 보고 AI 번역 및 요약 수행
     
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    Args:
+        title: 영어 뉴스 제목
+        max_retries: 최대 재시도 횟수
+        
+    Returns:
+        (번역된 제목, 짧은 요약, 긴 요약, 카테고리)
+    """
+    logger.info(f"🤖 AI 처리 시작: {title[:50]}...")
+    
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-lite:generateContent?key={GEMINI_API_KEY}"
     
     headers = {"Content-Type": "application/json"}
     
@@ -47,25 +87,32 @@ def get_ai_summary_and_category(title):
                 "text": f"""당신은 10년 차 베테랑 소화기내과 간호사입니다.
 아래 영어 뉴스 제목을 보고 다음 작업을 수행하세요:
 
-1. 제목을 한국어로 번역 (간결하게, 15자 이내)
-2. 짧은 요약 (1-2문장, 핵심만)
-3. 긴 요약 (3-4문장, 상세하게)
-4. 카테고리 분류
+1. 제목: 한국어로 의역 (간결하게, 핵심만)
+2. 짧은 요약: 1-2문장으로 핵심 내용 설명
+3. 긴 요약: 3-4문장으로 상세하게 설명
+4. 카테고리: 아래 5개 중 하나만 선택
 
 [카테고리 옵션]
-- 기술/혁신: AI, 새로운 장비, 기술 발전
-- 규제/가이드라인: FDA 승인, 정책, 지침
-- 연구/임상: 임상시험, 연구 결과, 통계
-- 안전/품질: 감염 관리, 의료사고, 안전
-- 교육/훈련: 교육 프로그램, 워크샵
+- 기술/혁신
+- 규제/가이드라인
+- 연구/임상
+- 안전/품질
+- 교육/훈련
 
 영어 뉴스 제목: {title}
 
-응답 형식 (반드시 이 형식으로):
-제목: [한국어 번역 제목]
-카테고리: [위 옵션 중 하나]
+중요: 반드시 아래 형식을 정확히 지켜주세요. 다른 기호나 텍스트를 추가하지 마세요.
+
+제목: [한국어 제목]
+카테고리: [위 5개 중 정확히 하나]
 짧은요약: [1-2문장]
-긴요약: [3-4문장]"""
+긴요약: [3-4문장]
+
+예시:
+제목: 젊은 층 대장암 급증 원인 규명
+카테고리: 연구/임상
+짧은요약: 최근 연구에서 젊은 연령층의 대장암 발병률이 급증하고 있는 원인이 밝혀졌습니다.
+긴요약: 미국 의학 저널에 발표된 연구에 따르면, 30-40대 대장암 환자가 지난 10년간 2배 증가했습니다. 연구팀은 가공식품 섭취 증가와 운동 부족이 주요 원인으로 분석했습니다. 전문가들은 30대부터 정기 검진을 권장하고 있습니다."""
             }]
         }],
         "generationConfig": {
@@ -74,316 +121,339 @@ def get_ai_summary_and_category(title):
         }
     }
     
-    try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        
-        if response.status_code == 200:
-            result = response.json()
-            
-            if 'candidates' in result and len(result['candidates']) > 0:
-                candidate = result['candidates'][0]
-                
-                if 'content' in candidate and 'parts' in candidate['content']:
-                    text = candidate['content']['parts'][0].get('text', '')
-                    
-                    if text:
-                        # 기본값
-                        translated_title = title[:50]
-                        category = "연구/임상"
-                        short_summary = text.strip()
-                        long_summary = text.strip()
-                        
-                        lines = text.strip().split('\n')
-                        for line in lines:
-                            if '제목:' in line or 'Title:' in line:
-                                translated_title = line.split(':', 1)[1].strip()
-                            elif '카테고리:' in line or 'Category:' in line:
-                                category = line.split(':', 1)[1].strip()
-                            elif '짧은요약:' in line or 'Short:' in line:
-                                short_summary = line.split(':', 1)[1].strip()
-                            elif '긴요약:' in line or 'Long:' in line:
-                                long_summary = line.split(':', 1)[1].strip()
-                        
-                        print(f"    ✅ 완료! [{category}]\n")
-                        return translated_title, short_summary, long_summary, category
-            
-            print(f"    ⚠️ 파싱 실패\n")
-            return title[:50], f"{title[:60]}...", f"{title[:80]}...", "연구/임상"
-            
-        else:
-            print(f"    ❌ API 오류 ({response.status_code})\n")
-            return title[:50], f"{title[:60]}...", f"{title[:80]}...", "연구/임상"
-            
-    except Exception as e:
-        print(f"    ❌ 오류: {str(e)[:50]}\n")
-        return title[:50], f"{title[:60]}...", f"{title[:80]}...", "연구/임상"
-
-
-# ============================================
-# 중복 체크 함수
-# ============================================
-def is_duplicate(title, existing_news, threshold=0.7):
-    """
-    제목 유사도를 계산해서 중복 판별
-    """
-    from difflib import SequenceMatcher
-    
-    title_lower = title.lower()
-    
-    for news in existing_news:
-        existing_title_lower = news['original_title'].lower()
-        similarity = SequenceMatcher(None, title_lower, existing_title_lower).ratio()
-        
-        if similarity > threshold:
-            return True
-    
-    return False
-
-
-# ============================================
-# RSS 피드 수집
-# ============================================
-def fetch_rss_feeds():
-    print("\n📡 여러 RSS 피드에서 최신 기사를 가져오는 중...\n")
-    
-    rss_urls = [
-        {
-            "url": "https://news.google.com/rss/search?q=endoscopy+health&hl=en-US&gl=US&ceid=US:en",
-            "name": "Google News - Endoscopy",
-            "priority": "⭐⭐⭐"
-        },
-        {
-            "url": "https://news.google.com/rss/search?q=gastroenterology+endoscopy&hl=en-US&gl=US&ceid=US:en",
-            "name": "Google News - Gastroenterology",
-            "priority": "⭐⭐⭐"
-        },
-        {
-            "url": "https://news.google.com/rss/search?q=colonoscopy+screening&hl=en-US&gl=US&ceid=US:en",
-            "name": "Google News - Colonoscopy",
-            "priority": "⭐⭐⭐"
-        },
-        {
-            "url": "https://rss.sciencedaily.com/health_medicine/digestive_disorders.xml",
-            "name": "ScienceDaily - Digestive",
-            "priority": "⭐⭐⭐⭐"
-        },
-        {
-            "url": "https://medicalxpress.com/rss-feed/search/?search=endoscopy",
-            "name": "Medical Xpress - Endoscopy",
-            "priority": "⭐⭐⭐⭐"
-        },
-        {
-            "url": "https://www.news-medical.net/tag/feed/Endoscopy.aspx",
-            "name": "News-Medical - Endoscopy",
-            "priority": "⭐⭐⭐⭐"
-        },
-    ]
-    
-    news_items = []
-    total_count = 0
-    
-    for feed_info in rss_urls:
-        url = feed_info["url"]
-        source_name = feed_info["name"]
-        priority = feed_info["priority"]
-        
-        print(f"📡 {source_name} ({priority})에서 수집 중...")
-        
+    for attempt in range(max_retries):
         try:
-            feed = feedparser.parse(url)
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
             
-            if not feed.entries:
-                print(f"  ⚠️ 피드가 비어있거나 접근 불가\n")
+            if response.status_code == 200:
+                result = response.json()
+                
+                if 'candidates' in result and len(result['candidates']) > 0:
+                    candidate = result['candidates'][0]
+                    
+                    if 'content' in candidate and 'parts' in candidate['content']:
+                        text = candidate['content']['parts'][0].get('text', '')
+                        
+                        if text:
+                            parsed = parse_ai_response(text, title)
+                            if parsed:
+                                logger.info(f"✅ AI 처리 완료: [{parsed[3]}]")
+                                return parsed
+                
+                logger.warning(f"⚠️ AI 응답 파싱 실패 (시도 {attempt + 1}/{max_retries})")
+                
+            elif response.status_code == 429:
+                wait_time = 2 ** attempt
+                logger.warning(f"⚠️ API 속도 제한 (429) - {wait_time}초 대기 후 재시도...")
+                time.sleep(wait_time)
                 continue
-            
-            num_articles = 5 if "⭐⭐⭐⭐" in priority else 3
-            
-            for i, entry in enumerate(feed.entries[:num_articles], 1):
-                total_count += 1
-                print(f"  [{total_count}] 기사 처리 중...")
                 
-                original_title = entry.get('title', '제목 없음')
-                link = entry.get('link', '#')
-                published = entry.get('published', '')
+            else:
+                logger.error(f"❌ API 오류 (상태 코드: {response.status_code})")
                 
-                # 중복 체크
-                if is_duplicate(original_title, news_items):
-                    print(f"    ⚠️ 중복 뉴스 건너뜀\n")
+        except requests.Timeout:
+            logger.warning(f"⚠️ API 타임아웃 (시도 {attempt + 1}/{max_retries})")
+            time.sleep(1)
+            
+        except requests.RequestException as e:
+            logger.error(f"❌ 네트워크 오류: {type(e).__name__}")
+            time.sleep(1)
+            
+        except Exception as e:
+            logger.error(f"❌ 예상치 못한 오류: {type(e).__name__} - {str(e)}")
+            break
+    
+    # 모든 재시도 실패 시 기본값 반환
+    logger.warning(f"⚠️ AI 처리 실패 - 기본값 사용: {title[:30]}...")
+    return get_fallback_summary(title)
+
+
+def parse_ai_response(text: str, original_title: str) -> Optional[Tuple[str, str, str, str]]:
+    """
+    AI 응답 텍스트를 파싱하여 구조화된 데이터 반환
+    
+    Args:
+        text: AI 응답 텍스트
+        original_title: 원본 제목 (폴백용)
+        
+    Returns:
+        (제목, 짧은요약, 긴요약, 카테고리) 또는 None
+    """
+    # 기본값
+    translated_title = original_title[:50]
+    category = "연구/임상"
+    short_summary = ""
+    long_summary = ""
+    
+    # 제목 추출
+    title_patterns = [
+        r'\*\*제목\*\*:\s*(.+)',
+        r'제목:\s*(.+)',
+        r'Title:\s*(.+)',
+        r'\*\*Title\*\*:\s*(.+)',
+    ]
+    for pattern in title_patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            translated_title = match.group(1).strip()
+            translated_title = re.sub(r'[\*\`]', '', translated_title)
+            translated_title = translated_title.split('\n')[0]
+            break
+    
+    # 카테고리 추출
+    category_patterns = [
+        r'\*\*카테고리\*\*:\s*(.+)',
+        r'카테고리:\s*(.+)',
+        r'Category:\s*(.+)',
+    ]
+    for pattern in category_patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            category = match.group(1).strip()
+            category = re.sub(r'[\*\`]', '', category)
+            category = category.split('\n')[0]
+            break
+    
+    # 짧은 요약 추출
+    short_patterns = [
+        r'\*\*짧은요약\*\*:\s*(.+)',
+        r'짧은요약:\s*(.+)',
+        r'Short:\s*(.+)',
+        r'\*\*Short\*\*:\s*(.+)',
+    ]
+    for pattern in short_patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            short_summary = match.group(1).strip()
+            short_summary = re.sub(r'[\*\`]', '', short_summary)
+            lines_after = text[match.end():].split('\n')
+            if lines_after and lines_after[0].strip():
+                short_summary += ' ' + lines_after[0].strip()
+            break
+    
+    # 긴 요약 추출
+    long_patterns = [
+        r'\*\*긴요약\*\*:\s*(.+)',
+        r'긴요약:\s*(.+)',
+        r'Long:\s*(.+)',
+        r'\*\*Long\*\*:\s*(.+)',
+    ]
+    for pattern in long_patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        if match:
+            remaining = text[match.start():]
+            long_summary = ''
+            for line in remaining.split('\n'):
+                if line.strip() and not any(x in line for x in ['제목:', 'Title:', '카테고리:', 'Category:', '짧은요약:', 'Short:']):
+                    clean_line = re.sub(r'^\*\*긴요약\*\*:\s*', '', line)
+                    clean_line = re.sub(r'^긴요약:\s*', '', clean_line)
+                    clean_line = re.sub(r'^Long:\s*', '', clean_line)
+                    clean_line = re.sub(r'[\*\`]', '', clean_line)
+                    if clean_line.strip():
+                        long_summary += clean_line.strip() + ' '
+            long_summary = long_summary.strip()
+            if long_summary:
+                break
+    
+    # 검증
+    if not translated_title or len(translated_title) < 5:
+        translated_title = original_title[:50]
+    
+    if not short_summary or len(short_summary) < 10:
+        short_summary = f"{translated_title} 관련 뉴스입니다."
+    
+    if not long_summary or len(long_summary) < 20:
+        long_summary = f"{translated_title} 관련 소식입니다. 자세한 내용은 원문을 참조하세요."
+    
+    return (translated_title, short_summary, long_summary, category)
+
+
+def get_fallback_summary(title: str) -> Tuple[str, str, str, str]:
+    """
+    AI 처리 실패 시 기본값 반환
+    
+    Args:
+        title: 원본 제목
+        
+    Returns:
+        (제목, 짧은요약, 긴요약, 카테고리)
+    """
+    translated_title = title[:50] + ("..." if len(title) > 50 else "")
+    short_summary = f"{translated_title} 관련 뉴스입니다."
+    long_summary = f"{translated_title} 관련 소식입니다. 자세한 내용은 원문을 참조하세요."
+    category = "연구/임상"
+    
+    return (translated_title, short_summary, long_summary, category)
+
+
+# =========================================================
+# RSS 피드 수집 (개선된 에러 처리)
+# =========================================================
+def fetch_single_feed(source_name: str, feed_url: str, priority: int) -> List[Dict]:
+    """
+    단일 RSS 피드에서 뉴스 수집
+    
+    Args:
+        source_name: 소스 이름
+        feed_url: RSS URL
+        priority: 우선순위
+        
+    Returns:
+        뉴스 목록
+    """
+    try:
+        logger.info(f"📡 {source_name} 수집 중...")
+        feed = feedparser.parse(feed_url)
+        
+        if not feed.entries:
+            logger.warning(f"⚠️ {source_name}: 뉴스 없음")
+            return []
+        
+        news_list = []
+        kst = timezone(timedelta(hours=9))
+        
+        for entry in feed.entries[:5]:
+            try:
+                # 날짜 파싱
+                pub_date = getattr(entry, 'published_parsed', None) or getattr(entry, 'updated_parsed', None)
+                if pub_date:
+                    date_obj = datetime(*pub_date[:6], tzinfo=timezone.utc)
+                    date_kst = date_obj.astimezone(kst)
+                    formatted_date = date_kst.strftime("%Y-%m-%d")
+                else:
+                    formatted_date = datetime.now(kst).strftime("%Y-%m-%d")
+                
+                # 제목 및 URL 추출
+                original_title = entry.title
+                url = entry.link
+                
+                if not original_title or not url:
+                    logger.warning(f"⚠️ 제목 또는 URL 없음 - 건너뜀")
                     continue
                 
-                # 날짜 파싱
-                try:
-                    date_formats = [
-                        '%a, %d %b %Y %H:%M:%S %z',
-                        '%a, %d %b %Y %H:%M:%S %Z',
-                        '%a, %d %b %Y',
-                        '%Y-%m-%d',
-                    ]
-                    
-                    date_obj = None
-                    for fmt in date_formats:
-                        try:
-                            date_obj = datetime.strptime(published[:25], fmt)
-                            break
-                        except:
-                            continue
-                    
-                    if date_obj:
-                        formatted_date = date_obj.strftime('%Y-%m-%d')
-                    else:
-                        formatted_date = datetime.now().strftime('%Y-%m-%d')
-                except:
-                    formatted_date = datetime.now().strftime('%Y-%m-%d')
-
-                # AI 번역 + 요약 + 카테고리 분류
+                # AI 번역 및 요약
+                time.sleep(0.5)  # API 속도 제한 방지
                 translated_title, short_summary, long_summary, category = get_ai_summary_and_category(original_title)
                 
-                news_item = {
-                    'original_title': original_title,
-                    'translated_title': translated_title,
-                    'short_summary': short_summary,
-                    'long_summary': long_summary,
-                    'source': source_name,
-                    'priority': priority,
-                    'date': formatted_date,
-                    'url': link,
-                    'category': category
-                }
-                news_items.append(news_item)
+                news_list.append({
+                    "original_title": original_title,
+                    "translated_title": translated_title,
+                    "short_summary": short_summary,
+                    "long_summary": long_summary,
+                    "category": category,
+                    "url": url,
+                    "date": formatted_date,
+                    "source": source_name,
+                    "priority": f"TOP {priority}"
+                })
                 
-                # API Rate Limit 방지
-                print(f"    ⏳ 2초 대기...\n")
-                time.sleep(12)
+            except Exception as e:
+                logger.error(f"❌ 개별 뉴스 처리 실패: {type(e).__name__}")
+                continue
         
+        logger.info(f"✅ {source_name}: {len(news_list)}개 뉴스 수집 완료")
+        return news_list
+        
+    except Exception as e:
+        logger.error(f"❌ {source_name} RSS 피드 오류: {type(e).__name__} - {str(e)}")
+        return []
+
+
+def fetch_rss_feeds() -> List[Dict]:
+    """
+    모든 RSS 피드에서 뉴스 수집 (에러 발생 시에도 계속 진행)
+    
+    Returns:
+        전체 뉴스 목록
+    """
+    logger.info("=" * 60)
+    logger.info("📰 RSS 피드 수집 시작")
+    logger.info("=" * 60)
+    
+    all_news = []
+    
+    for idx, (source_name, feed_url) in enumerate(RSS_FEEDS.items(), 1):
+        try:
+            news = fetch_single_feed(source_name, feed_url, idx)
+            all_news.extend(news)
         except Exception as e:
-            print(f"  ❌ {source_name} 피드 오류: {e}\n")
-            continue
+            logger.error(f"❌ {source_name} 전체 실패: {type(e).__name__}")
+            continue  # 다음 소스로 진행
+    
+    logger.info("=" * 60)
+    logger.info(f"✅ 총 {len(all_news)}개 뉴스 수집 완료")
+    logger.info("=" * 60)
+    
+    return all_news
+
+
+# =========================================================
+# HTML 생성
+# =========================================================
+def generate_html(news_list: List[Dict]) -> str:
+    """
+    뉴스 목록으로 HTML 생성
+    
+    Args:
+        news_list: 뉴스 데이터 리스트
         
-        print(f"  ✅ {source_name} 완료!\n")
-    
-    print(f"=" * 60)
-    print(f"✅ 이 {len(news_items)}개 기사 수집 완료!")
-    print(f"=" * 60)
-    print()
-    return news_items
-
-
-# ============================================
-# HTML 생성 (팝업 모달 포함)
-# ============================================
-def generate_html(news_list):
-    # 한국 시간대 (UTC+9) 설정
+    Returns:
+        완성된 HTML 문자열
+    """
     kst = timezone(timedelta(hours=9))
-    current_date = datetime.now(kst).strftime("%Y년 %m월 %d일 %H:%M")
-    
-    # 카테고리별 색상
-    category_tag_class = {
-        "기술/혁신": "tag-tech",
-        "규제/가이드라인": "tag-regulation",
-        "연구/임상": "tag-research",
-        "안전/품질": "tag-safety",
-        "교육/훈련": "tag-education"
-    }
+    current_date = datetime.now(kst).strftime("%Y년 %m월 %d일")
     
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="해외 최신 내시경 의학 뉴스를 AI가 매일 한국어로 큐레이션합니다">
-    <meta name="keywords" content="내시경,의학,뉴스,소화기내과,gastroenterology,endoscopy">
-    <title>LUMEN - 내시경 뉴스</title>
+    <title>✨ LUMEN - AI 의학 뉴스 큐레이션</title>
     <style>
-        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; line-height: 1.6; }}
         
         /* 헤더 */
-        header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 1.2rem 1rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
-        header h1 {{ font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
-        .update {{ margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.85; }}
+        header {{ background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; text-align: center; padding: 2rem 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }}
+        header h1 {{ font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }}
+        header .update {{ font-size: 0.95rem; opacity: 0.9; }}
         
         /* 네비게이션 */
-        nav {{
-            background: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }}
-        nav ul {{
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }}
-        nav a {{
-            color: #003366;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }}
-        nav a:hover {{ color: #FFD700; }}
+        nav {{ background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }}
+        nav ul {{ list-style: none; display: flex; justify-content: center; flex-wrap: wrap; padding: 1rem; gap: 1.5rem; }}
+        nav ul li a {{ text-decoration: none; color: #003366; font-weight: 500; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.3s; }}
+        nav ul li a:hover {{ background: #003366; color: white; }}
         
         /* 컨테이너 */
-        .container {{ max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }}
+        .container {{ max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }}
         
         /* 면책 배너 */
-        .disclaimer-banner {{
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
-            border-left: 5px solid #ffc107;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(255,193,7,0.2);
-        }}
-        .disclaimer-banner p {{
-            color: #856404;
-            font-size: 0.9rem;
-            margin: 0;
-            line-height: 1.6;
-        }}
-        .disclaimer-banner strong {{
-            color: #d9534f;
-            font-weight: 600;
-        }}
-        .disclaimer-banner a {{
-            color: #003366;
-            text-decoration: underline;
-            font-weight: 500;
-        }}
+        .disclaimer-banner {{ background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; }}
+        .disclaimer-banner p {{ color: #856404; font-size: 0.95rem; }}
+        .disclaimer-banner a {{ color: #003366; font-weight: 600; text-decoration: underline; }}
         
-        /* 간결한 통계 */
-        .stats-inline {{ background: white; padding: 0.8rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem; }}
-        .stat-item {{ display: flex; align-items: center; gap: 0.5rem; }}
-        .stat-item .number {{ font-size: 1.5rem; font-weight: bold; color: #003366; }}
-        .stat-item .label {{ font-size: 0.85rem; color: #666; }}
+        /* 통계 (한 줄) */
+        .stats-inline {{ display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }}
+        .stat-item {{ background: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }}
+        .stat-item .number {{ display: block; font-size: 2rem; font-weight: 700; color: #003366; }}
+        .stat-item .label {{ display: block; font-size: 0.9rem; color: #666; margin-top: 0.25rem; }}
         
-        /* 뉴스 그리드 */
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }}
-        .card {{ background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #003366; transition: all 0.3s; cursor: pointer; }}
-        .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }}
+        /* 그리드 */
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }}
         
-        /* 카테고리 태그 */
-        .tag {{ display: inline-block; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem; }}
-        .tag-tech {{ background: #4A90E2; }}
-        .tag-regulation {{ background: #E74C3C; }}
-        .tag-research {{ background: #2ECC71; }}
-        .tag-safety {{ background: #F39C12; }}
-        .tag-education {{ background: #9B59B6; }}
-        
-        /* 출처 뱃지 */
-        .source-badge {{ display: inline-block; font-size: 0.75rem; background: #f8f9fa; color: #666; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; }}
-        
-        /* 제목 */
-        .title {{ font-size: 1.3rem; font-weight: bold; color: #003366; margin-bottom: 1rem; line-height: 1.4; }}
-        
-        /* 요약 */
-        .summary {{ font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1rem; }}
-        
-        /* 메타 */
-        .meta {{ display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #888; flex-wrap: wrap; gap: 0.5rem; }}
+        /* 카드 */
+        .card {{ background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; position: relative; }}
+        .card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }}
+        .tag {{ display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; }}
+        .tag-tech {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }}
+        .tag-regulation {{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }}
+        .tag-research {{ background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }}
+        .tag-safety {{ background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }}
+        .tag-education {{ background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }}
+        .source-badge {{ position: absolute; top: 1rem; right: 1rem; background: #FFD700; color: #003366; padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }}
+        .title {{ font-size: 1.2rem; font-weight: 700; color: #003366; margin-bottom: 0.75rem; line-height: 1.4; }}
+        .summary {{ color: #666; font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.6; }}
+        .meta {{ display: flex; justify-content: space-between; font-size: 0.85rem; color: #999; }}
         
         /* 모달 (팝업) */
         .modal {{ display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }}
@@ -444,7 +514,7 @@ def generate_html(news_list):
         <div class="stats-inline">
             <div class="stat-item">
                 <span class="number">{len(news_list)}</span>
-                <span class="label">이 뉴스</span>
+                <span class="label">개 뉴스</span>
             </div>
 """
     
@@ -470,7 +540,7 @@ def generate_html(news_list):
     
     # 뉴스 카드 생성 (클릭 시 모달 열기)
     for idx, news in enumerate(news_list):
-        tag_class = category_tag_class.get(news['category'], "tag-research")
+        tag_class = CATEGORY_TAG_CLASS.get(news['category'], "tag-research")
         
         html += f"""
             <div class="card" onclick="openModal({idx})">
@@ -500,7 +570,7 @@ def generate_html(news_list):
     
     # 각 뉴스별 모달 생성
     for idx, news in enumerate(news_list):
-        tag_class = category_tag_class.get(news['category'], "tag-research")
+        tag_class = CATEGORY_TAG_CLASS.get(news['category'], "tag-research")
         html += f"""
     <div id="modal{idx}" class="modal">
         <div class="modal-content">
@@ -562,27 +632,38 @@ def generate_html(news_list):
 # 메인 실행
 # ============================================
 if __name__ == "__main__":
-    print("\n" + "=" * 60)
-    print("🚀 LUMEN 시스템 시작 (네비게이션 + 면책 배너 포함)")
-    print("=" * 60)
-    
-    news_data = fetch_rss_feeds()
-    
-    if not news_data:
-        print("⚠️ 뉴스를 가져오지 못했습니다.")
-        exit()
-    
-    print("🔧 HTML 파일 생성 중...\n")
-    final_html = generate_html(news_data)
-    
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(final_html)
-    
-    print("=" * 60)
-    print("✅ 완료! index.html 파일을 브라우저로 열어보세요.")
-    print("=" * 60)
-    print("\n💡 개선사항:")
-    print("  ✅ 네비게이션 메뉴 추가")
-    print("  ✅ 면책 배너 추가")
-    print("  ✅ 짧은 요약 표시")
-    print("  ✅ 원문 링크 제공")
+    try:
+        logger.info("\n" + "=" * 60)
+        logger.info("🚀 LUMEN 시스템 시작 (보안 강화 버전)")
+        logger.info("=" * 60)
+        
+        news_data = fetch_rss_feeds()
+        
+        if not news_data:
+            logger.warning("⚠️ 수집된 뉴스가 없습니다. 일부 RSS 피드에 문제가 있을 수 있습니다.")
+            logger.info("💡 수집된 뉴스가 없어도 빈 HTML 파일을 생성합니다.")
+        
+        logger.info("🔧 HTML 파일 생성 중...")
+        final_html = generate_html(news_data)
+        
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write(final_html)
+        
+        logger.info("=" * 60)
+        logger.info("✅ 완료! index.html 파일이 생성되었습니다.")
+        logger.info("=" * 60)
+        logger.info("\n💡 적용된 개선사항:")
+        logger.info("  ✅ API 키 로깅 제거 (보안 강화)")
+        logger.info("  ✅ 구조화된 로깅 시스템 적용")
+        logger.info("  ✅ 개별 RSS 피드 실패 시에도 계속 진행")
+        logger.info("  ✅ API 재시도 로직 추가 (429 에러 처리)")
+        logger.info("  ✅ 타입 힌트 추가 (코드 가독성 향상)")
+        logger.info("  ✅ 상세한 에러 로깅")
+        
+    except KeyboardInterrupt:
+        logger.info("\n⚠️ 사용자에 의해 중단되었습니다.")
+        exit(0)
+        
+    except Exception as e:
+        logger.error(f"\n❌ 치명적 오류 발생: {type(e).__name__} - {str(e)}")
+        exit(1)
