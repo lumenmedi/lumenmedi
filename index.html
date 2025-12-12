@@ -8,35 +8,28 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; line-height: 1.6; }
         
-        /* 헤더 */
         header { background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; text-align: center; padding: 2rem 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         header .update { font-size: 0.95rem; opacity: 0.9; }
         
-        /* 네비게이션 */
         nav { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; padding: 1rem; gap: 1.5rem; }
         nav ul li a { text-decoration: none; color: #003366; font-weight: 500; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.3s; }
         nav ul li a:hover { background: #003366; color: white; }
         
-        /* 컨테이너 */
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         
-        /* 면책 배너 */
         .disclaimer-banner { background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; }
         .disclaimer-banner p { color: #856404; font-size: 0.95rem; }
         .disclaimer-banner a { color: #003366; font-weight: 600; text-decoration: underline; }
         
-        /* 통계 (한 줄) */
         .stats-inline { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
         .stat-item { background: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
         .stat-item .number { display: block; font-size: 2rem; font-weight: 700; color: #003366; }
         .stat-item .label { display: block; font-size: 0.9rem; color: #666; margin-top: 0.25rem; }
         
-        /* 그리드 */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
         
-        /* 카드 */
         .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; position: relative; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
         .tag { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; }
@@ -50,7 +43,6 @@
         .summary { color: #666; font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.6; }
         .meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: #999; }
         
-        /* 모달 (팝업) */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
         .modal-content { background-color: white; margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
         .close { color: #aaa; float: right; font-size: 2rem; font-weight: bold; cursor: pointer; line-height: 1; }
@@ -62,17 +54,14 @@
         .btn { display: inline-block; background: linear-gradient(135deg, #003366 0%, #004d99 100%); color: white; padding: 0.8rem 2rem; border-radius: 6px; text-decoration: none; transition: all 0.3s; font-weight: 500; box-shadow: 0 2px 6px rgba(0,51,102,0.3); }
         .btn:hover { background: linear-gradient(135deg, #004d99 0%, #003366 100%); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,51,102,0.4); }
         
-        /* 소개 섹션 */
         .about { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 3rem; border-left: 4px solid #FFD700; }
         .about h3 { color: #003366; margin-bottom: 1rem; }
         .about p { color: #666; font-size: 0.95rem; }
         
-        /* 푸터 */
         footer { background: #003366; color: white; text-align: center; padding: 2rem; margin-top: 2rem; }
         footer a { color: #FFD700; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
         
-        /* 반응형 */
         @media (max-width: 768px) {
             header h1 { font-size: 1.8rem; }
             .grid { grid-template-columns: 1fr; }
@@ -84,7 +73,7 @@
 </head>
 <body>
     <header>
-        <h1>✨ LUMEN</h1>
+        <h1>LUMEN</h1>
         <p class="update">📅 2025년 12월 12일</p>
     </header>
     
@@ -96,16 +85,15 @@
             <li><a href="terms.html">📋 이용약관</a></li>
             <li><a href="disclaimer.html">⚖️ 면책조항</a></li>
             <li><a href="contact.html">📧 연락처</a></li>
+            
         </ul>
     </nav>
     
     <div class="container">
-        <!-- 면책 문구 -->
         <div class="disclaimer-banner">
             <p><strong>⚠️ 의료 정보 안내:</strong> 본 사이트의 정보는 교육 목적이며 의학적 조언을 대체할 수 없습니다. 
             자세한 내용은 <a href="disclaimer.html">면책조항</a>을 참고하세요.</p>
         </div>
-        <!-- 간결한 통계 (한 줄) -->
         <div class="stats-inline">
             <div class="stat-item">
                 <span class="number">10</span>
@@ -129,8 +117,8 @@
             <div class="card" onclick="openModal(0)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 2</span>
-                <h3 class="title">간암 예방 및 치료 노력 효과 있어</h3>
-                <p class="summary">간암 예방 및 치료를 위한 다양한 노력들이 효과를 보이고 있다는 연구 결과가 나왔습니다.</p>
+                <h3 class="title">간암 예방 및 치료 노력 효과 나타나</h3>
+                <p class="summary">간암 예방과 치료를 위한 노력이 긍정적인 결과를 보이고 있다는 내용입니다.</p>
                 <div class="meta">
                     <span>📰 Medical Xpress - Gastroenterology</span>
                     <span>2025-12-08</span>
@@ -140,8 +128,8 @@
             <div class="card" onclick="openModal(1)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 2</span>
-                <h3 class="title">참전 용사, 정신 건강 문제 시 간암 위험 증가</h3>
-                <p class="summary">연구 결과, 정신 건강 문제가 있는 참전 용사에게서 C형 간염 증가로 인한 간암 발병 위험이 높아지는 것으로 나타났습니다.</p>
+                <h3 class="title">참전 용사, 정신 건강 문제와 간암 위험 연관성 확인</h3>
+                <p class="summary">정신 건강 문제가 있는 참전 용사에게서 C형 간염 증가로 인한 간암 발병 위험이 높아진다는 연구 결과가 나왔습니다.</p>
                 <div class="meta">
                     <span>📰 Medical Xpress - Gastroenterology</span>
                     <span>2025-12-04</span>
@@ -151,8 +139,8 @@
             <div class="card" onclick="openModal(2)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 2</span>
-                <h3 class="title">호산구성 식도염 점막 치유 치료 표적 발견</h3>
-                <p class="summary">호산구성 식도염 환자의 점막 치유를 위한 새로운 치료 표적이 발견되어 치료법 개발에 기여할 것으로 기대됩니다.</p>
+                <h3 class="title">호산구성 식도염 점막 치유 표적 치료 가능성 제시</h3>
+                <p class="summary">호산구성 식도염 환자의 점막 치유를 위한 새로운 치료 표적이 발견될 가능성이 제기되었습니다.</p>
                 <div class="meta">
                     <span>📰 Medical Xpress - Gastroenterology</span>
                     <span>2025-12-03</span>
@@ -163,7 +151,7 @@
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 2</span>
                 <h3 class="title">진행성 담도암 2차 치료 가능성 제시</h3>
-                <p class="summary">진행성 담도암 환자를 위한 새로운 2차 치료 옵션이 발견될 가능성이 제기되었습니다.</p>
+                <p class="summary">진행성 담도암 환자를 위한 새로운 2차 치료 옵션의 가능성이 확인되었습니다.</p>
                 <div class="meta">
                     <span>📰 Medical Xpress - Gastroenterology</span>
                     <span>2025-11-29</span>
@@ -173,8 +161,8 @@
             <div class="card" onclick="openModal(4)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 2</span>
-                <h3 class="title">크론병, 해조류로 치료 가능할까?</h3>
-                <p class="summary">해조류가 크론병 환자의 장을 치유하는 데 효과가 있는지에 대한 연구가 진행 중입니다.</p>
+                <h3 class="title">해조류, 크론병 치료 가능성?</h3>
+                <p class="summary">해조류가 크론병 환자의 장 건강을 개선하는 데 도움이 될 수 있는지에 대한 연구가 진행 중입니다.</p>
                 <div class="meta">
                     <span>📰 Medical Xpress - Gastroenterology</span>
                     <span>2025-11-26</span>
@@ -184,8 +172,8 @@
             <div class="card" onclick="openModal(5)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 3</span>
-                <h3 class="title">방사성 요오드 치료 불응 갑상선암, 새로운 표적 치료법 효과 기대</h3>
-                <p class="summary">방사성 요오드 치료에 반응하지 않는 갑상선암 환자를 위한 새로운 표적 알파 치료법이 긍정적인 결과를 보여주고 있습니다.</p>
+                <h3 class="title">방사성 요오드 치료 불응 갑상선암, 새로운 표적 알파 치료법 효과 기대</h3>
+                <p class="summary">방사성 요오드 치료에 반응하지 않는 갑상선암 환자를 위한 새로운 표적 알파 치료법이 긍정적인 결과를 보였습니다.</p>
                 <div class="meta">
                     <span>📰 News-Medical - Gastroenterology</span>
                     <span>2025-12-06</span>
@@ -195,8 +183,8 @@
             <div class="card" onclick="openModal(6)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 3</span>
-                <h3 class="title">아시아 IBD 환자, PSC 발병률 낮고 임상 결과 양호</h3>
-                <p class="summary">아시아 염증성 장 질환(IBD) 환자들이 원발성 경화성 담관염(PSC) 발병률이 낮고 임상 경과가 더 좋다는 연구 결과가 나왔습니다.</p>
+                <h3 class="title">아시아 IBD 환자, PSC 발병률 낮고 임상 결과 더 좋아</h3>
+                <p class="summary">아시아 염증성 장 질환(IBD) 환자들이 원발성 경화성 담관염(PSC) 발병률이 낮고 임상 결과가 더 우수한 것으로 나타났습니다.</p>
                 <div class="meta">
                     <span>📰 News-Medical - Gastroenterology</span>
                     <span>2025-12-02</span>
@@ -207,7 +195,7 @@
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 3</span>
                 <h3 class="title">FOLFIRINOX, 진행성 담도암 2차 치료 효과 기대</h3>
-                <p class="summary">FOLFIRINOX 요법이 진행성 담도암 환자의 2차 치료 옵션으로 유망한 결과를 보였습니다.</p>
+                <p class="summary">FOLFIRINOX 화학요법이 진행성 담도암 환자의 2차 치료 옵션으로 유망하다는 연구 결과가 나왔습니다.</p>
                 <div class="meta">
                     <span>📰 News-Medical - Gastroenterology</span>
                     <span>2025-11-27</span>
@@ -217,8 +205,8 @@
             <div class="card" onclick="openModal(8)">
                 <span class="tag tag-research">연구/임상</span>
                 <span class="source-badge">TOP 3</span>
-                <h3 class="title">소아 간 이식 후 예후 이해 돕는 새로운 방법 발견</h3>
-                <p class="summary">연구진이 소아 간 이식 후 환자들의 경과를 더 잘 이해할 수 있는 새로운 방법을 제시했습니다.</p>
+                <h3 class="title">소아 간 이식 후 경과 이해 위한 새로운 방법 발견</h3>
+                <p class="summary">연구진이 소아 간 이식 환자의 예후를 예측하고 이해하는 새로운 방법을 제시했습니다.</p>
                 <div class="meta">
                     <span>📰 News-Medical - Gastroenterology</span>
                     <span>2025-11-25</span>
@@ -228,8 +216,8 @@
             <div class="card" onclick="openModal(9)">
                 <span class="tag tag-tech">기술/혁신</span>
                 <span class="source-badge">TOP 3</span>
-                <h3 class="title">전문가, 디지털 허브 통해 대장암 예방 및 관리 혁신 시도</h3>
-                <p class="summary">대장암 예방과 관리를 개선하기 위해 전문가들이 디지털 플랫폼을 구축했습니다. 이 플랫폼은 환자 중심의 맞춤형 케어를 제공할 것으로 기대됩니다.</p>
+                <h3 class="title">전문가, 디지털 허브 통해 대장암 예방 및 관리 혁신</h3>
+                <p class="summary">전문가들이 대장암 예방과 관리를 위한 디지털 플랫폼을 출시하여, 환자 중심의 맞춤형 케어를 제공할 예정입니다.</p>
                 <div class="meta">
                     <span>📰 News-Medical - Gastroenterology</span>
                     <span>2025-11-22</span>
@@ -240,8 +228,7 @@
         
         <div class="about">
             <h3>🩺 LUMEN이란?</h3>
-            <p>바쁜 의료 현장을 위해 <strong>Gastroenterology & Endoscopy News, Medical Xpress, News-Medical</strong> 등 
-            해외 최신 내시경 뉴스를 AI(Google Gemini)가 매일 한국어로 브리핑합니다.</p>
+            <p>바쁜 의료 현장을 위해 해외 최신 내시경 뉴스를 AI가 매일 한국어로 브리핑합니다.</p>
         </div>
     </div>
     
@@ -251,11 +238,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(0)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">간암 예방 및 치료 노력 효과 있어</h2>
+            <h2 class="modal-title">간암 예방 및 치료 노력 효과 나타나</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Liver cancer prevention, treatment efforts are working
             </div>
-            <p class="modal-summary">최근 발표된 연구에 따르면, 간암 예방을 위한 백신 접종, 조기 진단 프로그램, 그리고 치료법 개발 등이 긍정적인 결과를 나타내고 있습니다. 특히, 새로운 표적 치료제와 면역 항암제의 등장은 간암 환자의 생존율을 향상시키는 데 기여하고 있습니다. 전문가들은 지속적인 연구와 투자를 통해 간암 치료 성과를 더욱 높여야 한다고 강조합니다.</p>
+            <p class="modal-summary">여러 연구를 통해 간암 예방 및 치료법 개발 노력이 결실을 맺고 있음이 확인되었습니다. 새로운 치료법의 효과가 입증되고, 조기 진단 기술이 발전하면서 생존율 향상에 기여하고 있습니다. 전문가들은 지속적인 연구와 투자를 통해 간암 극복에 더욱 다가갈 수 있을 것으로 전망하고 있습니다.</p>
             <div class="modal-meta">
                 <span>📰 Medical Xpress - Gastroenterology</span>
                 <span>2025-12-08</span>
@@ -268,11 +255,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(1)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">참전 용사, 정신 건강 문제 시 간암 위험 증가</h2>
+            <h2 class="modal-title">참전 용사, 정신 건강 문제와 간암 위험 연관성 확인</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Mental health conditions may heighten liver cancer risk in veterans due to increased hepatitis C, study finds
             </div>
-            <p class="modal-summary">미국 참전 용사들을 대상으로 한 연구에서, 정신 건강 질환을 겪는 참전 용사들이 C형 간염 감염률이 높고, 이로 인해 간암 발병 위험이 증가하는 것으로 밝혀졌습니다. 이는 외상 후 스트레스 장애(PTSD)와 같은 정신 질환이 면역 체계를 약화시키고, C형 간염 바이러스의 활성화를 촉진하기 때문으로 분석됩니다. 연구진은 참전 용사들의 정신 건강 관리와 C형 간염 검진의 중요성을 강조했습니다.</p>
+            <p class="modal-summary">최근 연구에 따르면, 참전 용사들의 정신 건강 문제, 특히 C형 간염 감염이 간암 발병 위험을 높이는 주요 요인으로 밝혀졌습니다. 이는 C형 간염 감염률이 높은 참전 용사 집단에서 정신 건강 문제로 인한 면역력 저하가 간암 발병에 영향을 미치는 것으로 분석됩니다. 연구진은 참전 용사들의 정신 건강 관리와 C형 간염 검진의 중요성을 강조했습니다.</p>
             <div class="modal-meta">
                 <span>📰 Medical Xpress - Gastroenterology</span>
                 <span>2025-12-04</span>
@@ -285,11 +272,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(2)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">호산구성 식도염 점막 치유 치료 표적 발견</h2>
+            <h2 class="modal-title">호산구성 식도염 점막 치유 표적 치료 가능성 제시</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Potential therapeutic target for mucosal healing in eosinophilic esophagitis
             </div>
-            <p class="modal-summary">연구는 호산구성 식도염 환자에서 점막 치유를 촉진할 수 있는 특정 분자를 잠재적 치료 표적으로 제시했습니다. 이 발견은 호산구성 식도염의 새로운 치료 전략 개발에 중요한 단서를 제공하며, 환자들의 삶의 질을 향상시킬 수 있는 가능성을 열었습니다. 추가 연구를 통해 해당 표적을 활용한 효과적인 치료법 개발이 이루어질 것으로 예상됩니다.</p>
+            <p class="modal-summary">연구를 통해 호산구성 식도염의 점막 치유를 촉진할 수 있는 치료 표적이 확인될 수 있다는 전망이 나왔습니다. 이는 현재 치료법의 한계를 극복하고 환자의 삶의 질을 향상시키는 데 기여할 수 있을 것으로 기대됩니다. 추가적인 연구를 통해 구체적인 치료 전략 개발이 이루어질 수 있을 것입니다.</p>
             <div class="modal-meta">
                 <span>📰 Medical Xpress - Gastroenterology</span>
                 <span>2025-12-03</span>
@@ -306,7 +293,7 @@
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Potential new second-line option for advanced biliary tract cancer identified
             </div>
-            <p class="modal-summary">새로운 연구를 통해 진행성 담도암 치료에 사용될 수 있는 새로운 약물이나 치료법이 확인될 가능성이 있습니다. 이는 기존 치료법에 반응하지 않는 환자들에게 새로운 희망을 제시할 수 있습니다. 추가 연구를 통해 이 가능성을 검증하고 임상 적용 가능성을 평가해야 합니다.</p>
+            <p class="modal-summary">연구 결과, 기존 치료에 실패한 진행성 담도암 환자에게 효과적인 새로운 치료법이 발견될 가능성이 제기되었습니다. 이는 담도암 환자의 생존율 향상에 기여할 수 있는 중요한 발견입니다. 추가 연구를 통해 해당 치료법의 효과와 안전성을 확인할 필요가 있습니다.</p>
             <div class="modal-meta">
                 <span>📰 Medical Xpress - Gastroenterology</span>
                 <span>2025-11-29</span>
@@ -319,11 +306,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(4)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">크론병, 해조류로 치료 가능할까?</h2>
+            <h2 class="modal-title">해조류, 크론병 치료 가능성?</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Fighting Crohn's with algae—can it heal the gut?
             </div>
-            <p class="modal-summary">연구진은 해조류의 특정 성분이 염증을 줄이고 장내 환경을 개선하여 크론병 증상을 완화할 수 있는지 탐구하고 있습니다. 만약 효과가 입증된다면, 해조류는 크론병 치료의 새로운 대안이 될 수 있습니다. 현재 임상 시험을 통해 안전성과 효능을 평가하고 있습니다.</p>
+            <p class="modal-summary">연구자들은 해조류의 특정 성분이 크론병과 관련된 염증을 줄이고 장내 미생물 균형을 개선할 수 있는지 조사하고 있습니다. 이 연구는 크론병 치료에 대한 새로운 접근 방식을 제시할 수 있으며, 환자들에게 새로운 희망을 줄 수 있을 것으로 기대됩니다. 아직 초기 단계의 연구이지만, 긍정적인 결과가 나올 경우 환자들의 삶의 질을 크게 향상시킬 수 있을 것입니다.</p>
             <div class="modal-meta">
                 <span>📰 Medical Xpress - Gastroenterology</span>
                 <span>2025-11-26</span>
@@ -336,11 +323,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(5)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">방사성 요오드 치료 불응 갑상선암, 새로운 표적 치료법 효과 기대</h2>
+            <h2 class="modal-title">방사성 요오드 치료 불응 갑상선암, 새로운 표적 알파 치료법 효과 기대</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> New targeted alpha therapy shows promise for patients with radioiodine-refractory thyroid cancer
             </div>
-            <p class="modal-summary">새로운 표적 알파 치료법이 방사성 요오드 치료에 내성이 있는 갑상선암 환자들에게 유망한 치료 효과를 보였습니다. 초기 임상 연구 결과, 종양 축소 및 생존 기간 연장 등의 긍정적인 지표가 확인되었습니다. 이 치료법은 암세포에 특이적으로 작용하여 부작용을 최소화하는 장점을 가지고 있습니다.</p>
+            <p class="modal-summary">새로운 표적 알파 치료법이 방사성 요오드에 내성이 있는 갑상선암 환자에게 효과적인 치료 옵션이 될 가능성을 보여주었습니다. 임상 시험 결과, 환자들의 종양 크기가 감소하고 생존 기간이 연장되는 긍정적인 효과가 나타났습니다. 이 연구는 갑상선암 치료 분야에 새로운 희망을 제시하며, 추가적인 연구를 통해 치료 효과와 안전성을 확인할 필요가 있습니다.</p>
             <div class="modal-meta">
                 <span>📰 News-Medical - Gastroenterology</span>
                 <span>2025-12-06</span>
@@ -353,11 +340,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(6)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">아시아 IBD 환자, PSC 발병률 낮고 임상 결과 양호</h2>
+            <h2 class="modal-title">아시아 IBD 환자, PSC 발병률 낮고 임상 결과 더 좋아</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Asian IBD patients show lower PSC prevalence and better clinical outcomes
             </div>
-            <p class="modal-summary">연구에 따르면, 아시아 IBD 환자들은 서구 환자에 비해 PSC 발병 빈도가 낮으며, PSC가 발생하더라도 임상 결과가 더 긍정적인 경향을 보였습니다. 이는 유전적 요인, 환경적 요인, 그리고 치료 전략의 차이 때문일 수 있습니다. 해당 연구는 아시아 IBD 환자 관리에 대한 새로운 시사점을 제시합니다.</p>
+            <p class="modal-summary">최근 연구에 따르면 아시아 IBD 환자들은 서양 환자들에 비해 PSC 발생 빈도가 낮으며, 질병의 진행 속도와 예후도 더 긍정적인 경향을 보였습니다. 이는 인종적 요인, 식습관, 환경적 요인 등 복합적인 원인에 기인하는 것으로 분석됩니다. 연구 결과는 IBD 환자 관리 전략 수립에 중요한 시사점을 제공할 수 있습니다.</p>
             <div class="modal-meta">
                 <span>📰 News-Medical - Gastroenterology</span>
                 <span>2025-12-02</span>
@@ -374,7 +361,7 @@
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> FOLFIRINOX shows promise as a second-line option for advanced biliary tract cancer
             </div>
-            <p class="modal-summary">연구 결과, FOLFIRINOX는 기존 치료에 실패한 진행성 담도암 환자에게 효과적인 2차 치료 옵션이 될 수 있음을 시사했습니다. 이 치료법은 생존 기간 연장 및 질병 진행 억제에 긍정적인 영향을 미치는 것으로 나타났습니다. 추가적인 연구를 통해 FOLFIRINOX의 효능과 안전성을 더욱 면밀히 검토할 필요가 있습니다.</p>
+            <p class="modal-summary">연구 결과, FOLFIRINOX는 기존 치료에 실패한 진행성 담도암 환자에게 효과적인 2차 치료 옵션이 될 수 있음을 시사했습니다. 이는 환자의 생존 기간 연장 및 삶의 질 개선에 기여할 수 있는 가능성을 보여줍니다. 추가적인 연구를 통해 FOLFIRINOX의 효능과 안전성을 더욱 면밀히 평가해야 합니다.</p>
             <div class="modal-meta">
                 <span>📰 News-Medical - Gastroenterology</span>
                 <span>2025-11-27</span>
@@ -387,11 +374,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(8)">&times;</span>
             <span class="tag tag-research">연구/임상</span>
-            <h2 class="modal-title">소아 간 이식 후 예후 이해 돕는 새로운 방법 발견</h2>
+            <h2 class="modal-title">소아 간 이식 후 경과 이해 위한 새로운 방법 발견</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Researchers uncover a new way to understand how children fare after liver transplantation
             </div>
-            <p class="modal-summary">이 연구는 소아 간 이식 환자의 예후를 예측하고 관리하는 데 도움을 줄 수 있는 새로운 접근 방식을 제시했습니다. 연구팀은 이식 후 환자의 회복 과정을 추적하고, 합병증 발생 위험을 조기에 파악할 수 있는 방법을 개발했습니다. 이를 통해 환자 맞춤형 치료 계획을 수립하고, 생존율을 향상시킬 수 있을 것으로 기대됩니다.</p>
+            <p class="modal-summary">연구진은 소아 간 이식 후 환자의 경과를 더 잘 이해할 수 있는 새로운 접근 방식을 개발했습니다. 이 연구는 이식 후 합병증 발생 위험을 예측하고, 환자 맞춤형 치료 계획을 수립하는 데 기여할 것으로 기대됩니다. 이는 소아 간 이식 환자의 생존율과 삶의 질 향상에 도움이 될 수 있습니다.</p>
             <div class="modal-meta">
                 <span>📰 News-Medical - Gastroenterology</span>
                 <span>2025-11-25</span>
@@ -404,11 +391,11 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal(9)">&times;</span>
             <span class="tag tag-tech">기술/혁신</span>
-            <h2 class="modal-title">전문가, 디지털 허브 통해 대장암 예방 및 관리 혁신 시도</h2>
+            <h2 class="modal-title">전문가, 디지털 허브 통해 대장암 예방 및 관리 혁신</h2>
             <div class="modal-original-title">
                 <strong>원문 제목:</strong> Experts launch digital hub to transform bowel cancer prevention and care
             </div>
-            <p class="modal-summary">여러 분야의 전문가들이 협력하여 대장암 예방과 치료를 위한 디지털 허브를 개발했습니다. 이 허브는 최신 기술을 활용하여 조기 진단, 맞춤형 치료 계획 수립, 환자 교육 등을 제공할 예정입니다. 궁극적으로 대장암 생존율을 높이고 삶의 질을 향상시키는 것을 목표로 합니다.</p>
+            <p class="modal-summary">새로운 디지털 허브는 대장암 예방, 조기 진단, 치료, 관리 전반을 포괄하는 정보를 제공합니다. 이 플랫폼은 환자들에게 개인 맞춤형 정보를 제공하고, 의료진과의 소통을 강화하여 치료 효과를 높이는 것을 목표로 합니다. 또한, 최신 연구 결과와 기술을 통합하여 대장암 관련 정보를 접근성 높게 제공할 것입니다.</p>
             <div class="modal-meta">
                 <span>📰 News-Medical - Gastroenterology</span>
                 <span>2025-11-22</span>
@@ -419,12 +406,7 @@
 
     
     <footer>
-        <p>© 2024 <a href="index.html">LUMEN</a> | 
-        <a href="about.html">소개</a> | 
-        <a href="privacy.html">개인정보처리방침</a> | 
-        <a href="terms.html">이용약관</a> | 
-        <a href="disclaimer.html">면책조항</a> | 
-        <a href="contact.html">연락처</a></p>
+        <p>© 2024 <a href="index.html">LUMEN</a> | <a href="index.html">홈</a> | <a href="about.html">소개</a> | <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a> | <a href="disclaimer.html">면책조항</a> | <a href="contact.html">연락처</a></p>
         <p style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8;">
             AI 큐레이션 | 매일 오전 8시 업데이트 | 문의: lumenmedi@gmail.com
         </p>

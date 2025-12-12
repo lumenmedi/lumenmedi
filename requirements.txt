@@ -1,0 +1,35 @@
+# LUMEN 프로젝트 필수 패키지
+# 설치 방법: pip install -r requirements.txt
+
+# 환경 변수 관리
+python-dotenv==1.0.0
+
+# RSS 피드 파싱
+feedparser==6.0.10
+
+# HTTP 요청 (동기)
+requests==2.31.0
+
+# HTTP 요청 (비동기)
+aiohttp
+
+# 날짜/시간 처리 (내장 모듈이지만 명시)
+# datetime (built-in)
+
+# JSON 처리 (내장 모듈)
+# json (built-in)
+
+# 정규표현식 (내장 모듈)
+# re (built-in)
+
+# 로깅 (내장 모듈)
+# logging (built-in)
+
+# 해시 생성 (내장 모듈)
+# hashlib (built-in)
+
+# 비동기 처리 (내장 모듈)
+# asyncio (built-in)
+
+# 문자열 유사도 계산 (내장 모듈)
+# difflib (built-in)
