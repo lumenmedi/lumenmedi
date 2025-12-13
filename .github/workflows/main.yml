@@ -27,6 +27,11 @@ jobs:
       run: |
         pip install feedparser requests python-dotenv google-generativeai
         
+    - name: Install dependencies
+      run: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+
     - name: 뉴스 수집 및 사이트 업데이트 실행
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
