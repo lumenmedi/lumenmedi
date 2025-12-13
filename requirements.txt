@@ -11,7 +11,7 @@ feedparser==6.0.10
 requests==2.31.0
 
 # HTTP 요청 (비동기)
-aiohttp
+aiohttp==3.9.1
 
 # 날짜/시간 처리 (내장 모듈이지만 명시)
 # datetime (built-in)
